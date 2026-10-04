@@ -146,6 +146,11 @@
         position: relative;
     }
 
+    .chart-box canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
     /* =========================
        OVERDUE CHART
     ========================== */
@@ -176,6 +181,18 @@
         position: relative;
     }
 
+    .overdue-empty-message {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #8a94a6;
+        font-size: 13px;
+        pointer-events: none;
+        text-align: center;
+    }
+
     /* =========================
        UTILIZATION
     ========================== */
@@ -193,11 +210,13 @@
         display: grid;
         place-items: center;
         flex: 0 0 auto;
+
         background:
             conic-gradient(
                 #2563eb {{ utilization_percentage }}%,
                 #e9edf3 0
             );
+
         position: relative;
     }
 
@@ -1186,27 +1205,44 @@
             </div>
 
 
-            {% if overdue_issues %}
+            <!--
+                IMPORTANT:
+                Canvas is ALWAYS rendered.
+                This fixes the "Overdue Canvas: null" issue.
+            -->
 
-                <div class="overdue-chart-wrapper">
+            <div class="overdue-chart-wrapper">
 
-                    <h3 class="overdue-chart-title">
-                        Overdue Analysis
-                    </h3>
+                <h3 class="overdue-chart-title">
+                    Overdue Analysis
+                </h3>
 
-                    <p class="overdue-chart-subtitle">
-                        Number of days each book is overdue
-                    </p>
+                <p class="overdue-chart-subtitle">
+                    Number of days each book is overdue
+                </p>
 
 
-                    <div class="overdue-chart-container">
+                <div class="overdue-chart-container">
 
-                        <canvas id="overdueBooksChart"></canvas>
+                    <canvas id="overdueBooksChart"></canvas>
 
-                    </div>
+                    {% if not overdue_issues %}
+
+                        <div
+                            id="overdueEmptyMessage"
+                            class="overdue-empty-message"
+                        >
+                            No overdue books currently.
+                        </div>
+
+                    {% endif %}
 
                 </div>
 
+            </div>
+
+
+            {% if overdue_issues %}
 
                 <div class="activity-list">
 
@@ -1251,16 +1287,6 @@
                     </div>
 
                     {% endfor %}
-
-                </div>
-
-
-            {% else %}
-
-                <div class="empty-state">
-
-                    No overdue books.
-                    Everything is on schedule.
 
                 </div>
 
@@ -1508,15 +1534,62 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    console.log("Dashboard JavaScript started.");
+
     /* =========================================================
        CHECK CHART.JS
     ========================================================= */
 
     if (typeof Chart === "undefined") {
 
-        console.error("Chart.js could not be loaded.");
+        console.error(
+            "Chart.js could not be loaded."
+        );
 
         return;
+    }
+
+    console.log(
+        "Chart.js loaded successfully:",
+        Chart.version
+    );
+
+
+    /* =========================================================
+       SAFE JSON READER
+    ========================================================= */
+
+    function getJSON(id, fallback = []) {
+
+        const element =
+            document.getElementById(id);
+
+        if (!element) {
+
+            console.warn(
+                "JSON element not found:",
+                id
+            );
+
+            return fallback;
+        }
+
+        try {
+
+            return JSON.parse(
+                element.textContent
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Invalid JSON in:",
+                id,
+                error
+            );
+
+            return fallback;
+        }
     }
 
 
@@ -1524,108 +1597,88 @@ document.addEventListener("DOMContentLoaded", function () {
        MONTHLY CIRCULATION CHART
     ========================================================= */
 
-    const monthlyLabelsElement =
-        document.getElementById("monthly-labels");
+    const monthlyLabels =
+        getJSON("monthly-labels");
 
-    const monthlyIssuedElement =
-        document.getElementById("monthly-issued");
+    const monthlyIssued =
+        getJSON("monthly-issued");
 
-    const monthlyReturnedElement =
-        document.getElementById("monthly-returned");
+    const monthlyReturned =
+        getJSON("monthly-returned");
 
-
-    if (
-        monthlyLabelsElement &&
-        monthlyIssuedElement &&
-        monthlyReturnedElement
-    ) {
-
-        const monthlyLabels =
-            JSON.parse(
-                monthlyLabelsElement.textContent
-            );
-
-        const monthlyIssued =
-            JSON.parse(
-                monthlyIssuedElement.textContent
-            );
-
-        const monthlyReturned =
-            JSON.parse(
-                monthlyReturnedElement.textContent
-            );
+    const monthlyCanvas =
+        document.getElementById(
+            "monthlyCirculationChart"
+        );
 
 
-        const monthlyCanvas =
-            document.getElementById(
-                "monthlyCirculationChart"
-            );
+    if (monthlyCanvas) {
 
+        new Chart(
+            monthlyCanvas,
+            {
+                type: "line",
 
-        if (monthlyCanvas) {
+                data: {
 
-            new Chart(
-                monthlyCanvas,
-                {
-                    type: "line",
+                    labels: monthlyLabels,
 
-                    data: {
+                    datasets: [
 
-                        labels: monthlyLabels,
+                        {
+                            label: "Issued",
 
-                        datasets: [
+                            data: monthlyIssued,
 
-                            {
-                                label: "Issued",
+                            tension: 0.35,
 
-                                data: monthlyIssued,
+                            borderWidth: 2,
 
-                                tension: 0.35,
-
-                                borderWidth: 2,
-
-                                fill: false
-                            },
-
-                            {
-                                label: "Returned",
-
-                                data: monthlyReturned,
-
-                                tension: 0.35,
-
-                                borderWidth: 2,
-
-                                fill: false
-                            }
-
-                        ]
-                    },
-
-                    options: {
-
-                        responsive: true,
-
-                        maintainAspectRatio: false,
-
-                        plugins: {
-
-                            legend: {
-                                position: "bottom"
-                            }
-
+                            fill: false
                         },
 
-                        scales: {
+                        {
+                            label: "Returned",
 
-                            y: {
+                            data: monthlyReturned,
 
-                                beginAtZero: true,
+                            tension: 0.35,
 
-                                ticks: {
-                                    precision: 0
-                                }
+                            borderWidth: 2,
 
+                            fill: false
+                        }
+
+                    ]
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            position: "bottom"
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            },
+
+                            title: {
+                                display: true,
+                                text: "Books"
                             }
 
                         }
@@ -1633,10 +1686,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                 }
-            );
 
-        }
+            }
+        );
 
+        console.log(
+            "Monthly circulation chart created."
+        );
     }
 
 
@@ -1672,11 +1728,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             data: [
 
-                                {{ in_stock_count }},
+                                {{ in_stock_count|default:0 }},
 
-                                {{ low_stock_count }},
+                                {{ low_stock_count|default:0 }},
 
-                                {{ out_of_stock_count }}
+                                {{ out_of_stock_count|default:0 }}
 
                             ],
 
@@ -1709,6 +1765,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+        console.log(
+            "Inventory status chart created."
+        );
     }
 
 
@@ -1716,15 +1775,11 @@ document.addEventListener("DOMContentLoaded", function () {
        TOP ISSUED BOOKS CHART
     ========================================================= */
 
-    const topBooksLabelsElement =
-        document.getElementById(
-            "top-books-labels"
-        );
+    const topBooksLabels =
+        getJSON("top-books-labels");
 
-    const topBooksDataElement =
-        document.getElementById(
-            "top-books-data"
-        );
+    const topBooksData =
+        getJSON("top-books-data");
 
     const topBooksCanvas =
         document.getElementById(
@@ -1732,22 +1787,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    if (
-        topBooksLabelsElement &&
-        topBooksDataElement &&
-        topBooksCanvas
-    ) {
-
-        const topBooksLabels =
-            JSON.parse(
-                topBooksLabelsElement.textContent
-            );
-
-        const topBooksData =
-            JSON.parse(
-                topBooksDataElement.textContent
-            );
-
+    if (topBooksCanvas) {
 
         new Chart(
             topBooksCanvas,
@@ -1822,6 +1862,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+        console.log(
+            "Top books chart created."
+        );
     }
 
 
@@ -1829,15 +1872,11 @@ document.addEventListener("DOMContentLoaded", function () {
        TOP STUDENTS CHART
     ========================================================= */
 
-    const topStudentsLabelsElement =
-        document.getElementById(
-            "top-students-labels"
-        );
+    const topStudentsLabels =
+        getJSON("top-students-labels");
 
-    const topStudentsDataElement =
-        document.getElementById(
-            "top-students-data"
-        );
+    const topStudentsData =
+        getJSON("top-students-data");
 
     const topStudentsCanvas =
         document.getElementById(
@@ -1845,22 +1884,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    if (
-        topStudentsLabelsElement &&
-        topStudentsDataElement &&
-        topStudentsCanvas
-    ) {
-
-        const topStudentsLabels =
-            JSON.parse(
-                topStudentsLabelsElement.textContent
-            );
-
-        const topStudentsData =
-            JSON.parse(
-                topStudentsDataElement.textContent
-            );
-
+    if (topStudentsCanvas) {
 
         new Chart(
             topStudentsCanvas,
@@ -1937,6 +1961,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+        console.log(
+            "Top students chart created."
+        );
     }
 
 
@@ -1944,15 +1971,11 @@ document.addEventListener("DOMContentLoaded", function () {
        CATEGORY DISTRIBUTION CHART
     ========================================================= */
 
-    const categoryLabelsElement =
-        document.getElementById(
-            "category-labels"
-        );
+    const categoryLabels =
+        getJSON("category-labels");
 
-    const categoryValuesElement =
-        document.getElementById(
-            "category-values"
-        );
+    const categoryValues =
+        getJSON("category-values");
 
     const categoryCanvas =
         document.getElementById(
@@ -1960,22 +1983,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    if (
-        categoryLabelsElement &&
-        categoryValuesElement &&
-        categoryCanvas
-    ) {
-
-        const categoryLabels =
-            JSON.parse(
-                categoryLabelsElement.textContent
-            );
-
-        const categoryValues =
-            JSON.parse(
-                categoryValuesElement.textContent
-            );
-
+    if (categoryCanvas) {
 
         new Chart(
             categoryCanvas,
@@ -2024,6 +2032,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         );
 
+        console.log(
+            "Category distribution chart created."
+        );
     }
 
 
@@ -2031,15 +2042,11 @@ document.addEventListener("DOMContentLoaded", function () {
        PAYMENT STATUS CHART
     ========================================================= */
 
-    const paymentStatusLabelsElement =
-        document.getElementById(
-            "payment-status-labels"
-        );
+    const paymentStatusLabels =
+        getJSON("payment-status-labels");
 
-    const paymentStatusDataElement =
-        document.getElementById(
-            "payment-status-data"
-        );
+    const paymentStatusData =
+        getJSON("payment-status-data");
 
     const paymentStatusCanvas =
         document.getElementById(
@@ -2047,22 +2054,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    if (
-        paymentStatusLabelsElement &&
-        paymentStatusDataElement &&
-        paymentStatusCanvas
-    ) {
-
-        const paymentStatusLabels =
-            JSON.parse(
-                paymentStatusLabelsElement.textContent
-            );
-
-        const paymentStatusData =
-            JSON.parse(
-                paymentStatusDataElement.textContent
-            );
-
+    if (paymentStatusCanvas) {
 
         new Chart(
             paymentStatusCanvas,
@@ -2109,8 +2101,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
             }
+
         );
 
+        console.log(
+            "Payment status chart created."
+        );
     }
 
 
@@ -2118,21 +2114,20 @@ document.addEventListener("DOMContentLoaded", function () {
        OVERDUE BOOKS CHART
     ========================================================= */
 
-    const overdueLabelsElement =
-        document.getElementById(
-            "overdue-labels"
-        );
+    const overdueLabels =
+        getJSON("overdue-labels");
 
-
-    const overdueDaysElement =
-        document.getElementById(
-            "overdue-days"
-        );
-
+    const overdueDays =
+        getJSON("overdue-days");
 
     const overdueCanvas =
         document.getElementById(
             "overdueBooksChart"
+        );
+
+    const overdueEmptyMessage =
+        document.getElementById(
+            "overdueEmptyMessage"
         );
 
 
@@ -2141,50 +2136,23 @@ document.addEventListener("DOMContentLoaded", function () {
         overdueCanvas
     );
 
+    console.log(
+        "Overdue Labels:",
+        overdueLabels
+    );
 
     console.log(
-        "Overdue Labels Element:",
-        overdueLabelsElement
+        "Overdue Days:",
+        overdueDays
     );
 
 
-    console.log(
-        "Overdue Days Element:",
-        overdueDaysElement
-    );
+    if (overdueCanvas) {
 
-
-    if (
-        overdueLabelsElement &&
-        overdueDaysElement &&
-        overdueCanvas
-    ) {
-
-        const overdueLabels =
-            JSON.parse(
-                overdueLabelsElement.textContent
-            );
-
-
-        const overdueDays =
-            JSON.parse(
-                overdueDaysElement.textContent
-            );
-
-
-        console.log(
-            "Overdue Labels:",
-            overdueLabels
-        );
-
-
-        console.log(
-            "Overdue Days:",
-            overdueDays
-        );
-
-
-        if (overdueLabels.length > 0) {
+        if (
+            overdueLabels.length > 0 &&
+            overdueDays.length > 0
+        ) {
 
             new Chart(
                 overdueCanvas,
@@ -2222,20 +2190,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     },
 
-
                     options: {
 
                         responsive: true,
 
                         maintainAspectRatio: false,
 
-
                         plugins: {
 
                             legend: {
                                 display: false
                             },
-
 
                             tooltip: {
 
@@ -2255,7 +2220,6 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
 
                         },
-
 
                         scales: {
 
@@ -2278,7 +2242,6 @@ document.addEventListener("DOMContentLoaded", function () {
                                 }
 
                             },
-
 
                             x: {
 
@@ -2308,9 +2271,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
             );
 
+
+            if (overdueEmptyMessage) {
+
+                overdueEmptyMessage.style.display =
+                    "none";
+
+            }
+
+            console.log(
+                "Overdue chart created."
+            );
+
+        } else {
+
+            console.log(
+                "No overdue data available. Empty message displayed."
+            );
+
         }
 
     }
+
+
+    console.log(
+        "All dashboard charts initialization completed."
+    );
 
 });
 
