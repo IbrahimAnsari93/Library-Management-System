@@ -2,10 +2,16 @@ from pathlib import Path
 import os
 
 
+# ============================================================
+# BASE DIRECTORY
+# ============================================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-
+# ============================================================
+# SECURITY
+# ============================================================
 
 SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY",
@@ -13,11 +19,19 @@ SECRET_KEY = os.environ.get(
 )
 
 
+# ============================================================
+# DEBUG
+# ============================================================
+
 DEBUG = os.environ.get(
     "DJANGO_DEBUG",
     "True"
 ).lower() in ("true", "1", "yes")
 
+
+# ============================================================
+# ALLOWED HOSTS
+# ============================================================
 
 allowed_hosts = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
@@ -31,6 +45,10 @@ ALLOWED_HOSTS = [
 ]
 
 
+# ============================================================
+# CSRF TRUSTED ORIGINS
+# ============================================================
+
 csrf_trusted_origins = os.environ.get(
     "DJANGO_CSRF_TRUSTED_ORIGINS",
     ""
@@ -43,7 +61,9 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 
 
-
+# ============================================================
+# APPLICATIONS
+# ============================================================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -57,8 +77,15 @@ INSTALLED_APPS = [
 ]
 
 
+# ============================================================
+# MIDDLEWARE
+# ============================================================
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+
+    # WhiteNoise - serve static files in production
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
 
@@ -74,8 +101,16 @@ MIDDLEWARE = [
 ]
 
 
+# ============================================================
+# URL CONFIGURATION
+# ============================================================
+
 ROOT_URLCONF = "library_project.urls"
 
+
+# ============================================================
+# TEMPLATES
+# ============================================================
 
 TEMPLATES = [
     {
@@ -96,7 +131,6 @@ TEMPLATES = [
 
                 "django.contrib.messages.context_processors.messages",
 
-                                                
                 "library.context_processors.notifications_context",
             ],
         },
@@ -104,8 +138,16 @@ TEMPLATES = [
 ]
 
 
+# ============================================================
+# WSGI
+# ============================================================
+
 WSGI_APPLICATION = "library_project.wsgi.application"
 
+
+# ============================================================
+# DATABASE
+# ============================================================
 
 DATABASES = {
     "default": {
@@ -115,6 +157,10 @@ DATABASES = {
     }
 }
 
+
+# ============================================================
+# PASSWORD VALIDATION
+# ============================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -136,6 +182,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# ============================================================
+# INTERNATIONALIZATION
+# ============================================================
+
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
@@ -144,6 +194,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+
+# ============================================================
+# STATIC FILES
+# ============================================================
 
 STATIC_URL = "static/"
 
@@ -154,13 +208,40 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
+# ============================================================
+# WHITENOISE STATIC FILE STORAGE
+# ============================================================
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+
+# ============================================================
+# MEDIA FILES
+# ============================================================
+
 MEDIA_URL = "/media/"
 
 MEDIA_ROOT = BASE_DIR / "media"
 
 
+# ============================================================
+# DEFAULT PRIMARY KEY
+# ============================================================
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
+# ============================================================
+# LOGIN / LOGOUT
+# ============================================================
 
 LOGIN_URL = "/login/"
 
@@ -169,12 +250,18 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/login/"
 
 
+# ============================================================
+# CSRF / SESSION SETTINGS
+# ============================================================
+
 CSRF_COOKIE_HTTPONLY = False
 
 CSRF_USE_SESSIONS = False
 
 
-
+# ============================================================
+# PRODUCTION SECURITY
+# ============================================================
 
 if not DEBUG:
 
@@ -197,12 +284,20 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 
+# ============================================================
+# SESSION SETTINGS
+# ============================================================
+
 SESSION_COOKIE_HTTPONLY = True
 
 SESSION_COOKIE_SAMESITE = "Lax"
 
 CSRF_COOKIE_SAMESITE = "Lax"
 
+
+# ============================================================
+# FILE UPLOAD LIMITS
+# ============================================================
 
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 

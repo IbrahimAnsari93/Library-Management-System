@@ -3,3 +3,4 @@ Pillow==12.3.0
 mysqlclient==2.3.0
 gunicorn==26.2.0
 reportlab==5.0.1
+whitenoise==6.12.0
