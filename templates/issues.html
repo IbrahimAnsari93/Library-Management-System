@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .page-title {
+        margin: 0;
+        color: #123b3a;
+        font-size: 28px;
+        font-weight: 800;
+    }
+
+    .page-subtitle {
+        margin: 6px 0 0;
+        color: #6b7c7b;
+        font-size: 14px;
+    }
+
+    .add-btn {
+        background: #0f766e;
+        color: white;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        display: inline-block;
+        transition: 0.2s;
+    }
+
+    .add-btn:hover {
+        background: #0b5f59;
+        color: white;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 8px 25px rgba(15, 59, 58, 0.08);
+        overflow: hidden;
+        border: 1px solid #e5eeee;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .issue-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 950px;
+    }
+
+    .issue-table th {
+        background: #f0f7f6;
+        color: #24504e;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 15px;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .issue-table td {
+        padding: 16px 15px;
+        border-top: 1px solid #edf2f2;
+        color: #334b4a;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .issue-table tr:hover {
+        background: #fafdfd;
+    }
+
+    .student-name,
+    .book-name {
+        font-weight: 700;
+        color: #173f3d;
+    }
+
+    .date-text {
+        color: #526665;
+    }
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .status-issued {
+        background: #e0f2fe;
+        color: #0369a1;
+    }
+
+    .status-late {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .status-returned {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .fine {
+        font-weight: 800;
+        color: #b45309;
+    }
+
+    .no-fine {
+        color: #64748b;
+    }
+
+    .return-btn {
+        background: #0f766e;
+        color: white;
+        text-decoration: none;
+        padding: 8px 13px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .return-btn:hover {
+        background: #0b5f59;
+        color: white;
+    }
+
+    .returned-text {
+        color: #15803d;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #718281;
+    }
+
+    .empty-icon {
+        font-size: 45px;
+        margin-bottom: 12px;
+    }
+
+    .empty-title {
+        color: #244846;
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .empty-text {
+        font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+        .page-title {
+            font-size: 23px;
+        }
+
+        .add-btn {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Issue Management</h1>
+        <p class="page-subtitle">
+            Track issued books, due dates, returns and fines.
+        </p>
+    </div>
+
+    {% if request.user.is_staff %}
+        <a href="{% url 'issue_book' %}" class="add-btn">
+            + Issue Book
+        </a>
+    {% endif %}
+</div>
+
+<div class="table-card">
+    {% if issues %}
+        <div class="table-wrapper">
+            <table class="issue-table">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Student</th>
+                        <th>Book</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Fine</th>
+                        {% if request.user.is_staff %}
+                            <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for issue in issues %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+                                <div class="student-name">
+                                    {{ issue.student.name }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="book-name">
+                                    {{ issue.book.title }}
+                                </div>
+                            </td>
+
+                            <td class="date-text">
+                                {{ issue.issue_date|date:"d M Y" }}
+                            </td>
+
+                            <td class="date-text">
+                                {{ issue.due_date|date:"d M Y" }}
+                            </td>
+
+                            <td class="date-text">
+                                {% if issue.return_date %}
+                                    {{ issue.return_date|date:"d M Y" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if issue.status == "Returned" %}
+                                    <span class="status status-returned">
+                                        Returned
+                                    </span>
+                                {% elif issue.status == "Late" %}
+                                    <span class="status status-late">
+                                        Late
+                                    </span>
+                                {% else %}
+                                    <span class="status status-issued">
+                                        Issued
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if issue.current_fine > 0 %}
+                                    <span class="fine">
+                                        ₹{{ issue.current_fine }}
+                                    </span>
+                                {% elif issue.fine > 0 %}
+                                    <span class="fine">
+                                        ₹{{ issue.fine }}
+                                    </span>
+                                {% else %}
+                                    <span class="no-fine">
+                                        ₹0
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            {% if request.user.is_staff %}
+                                <td>
+                                    {% if not issue.returned %}
+                                        <a
+                                            href="{% url 'return_book' issue.id %}"
+                                            class="return-btn"
+                                            onclick="return confirm('Are you sure you want to return this book?');"
+                                        >
+                                            Return
+                                        </a>
+                                    {% else %}
+                                        <span class="returned-text">
+                                            ✓ Completed
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <div class="empty-icon">📚</div>
+
+            <div class="empty-title">
+                No Book Issues Found
+            </div>
+
+            <div class="empty-text">
+                No books have been issued yet.
+            </div>
+
+            {% if request.user.is_staff %}
+                <br>
+                <a href="{% url 'issue_book' %}" class="add-btn">
+                    + Issue First Book
+                </a>
+            {% endif %}
+        </div>
+
+    {% endif %}
+</div>
+
+{% endblock %}

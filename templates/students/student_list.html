@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .top h1 {
+            margin: 0;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #218838;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .search-form button {
+            padding: 11px 18px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-form button:hover {
+            background: #0056b3;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .actions {
+            white-space: nowrap;
+        }
+
+        .actions a {
+            display: inline-block;
+            margin-right: 8px;
+            padding: 6px 9px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .view {
+            color: #17a2b8;
+            background: #e8f8fb;
+        }
+
+        .view:hover {
+            background: #d1f1f5;
+        }
+
+        .edit {
+            color: #007bff;
+            background: #e7f1ff;
+        }
+
+        .edit:hover {
+            background: #d5e7ff;
+        }
+
+        .delete {
+            color: #dc3545;
+            background: #fdeaea;
+        }
+
+        .delete:hover {
+            background: #f9d2d5;
+        }
+
+        .pagination {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 3px;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .pagination a {
+            color: #007bff;
+            background: white;
+        }
+
+        .pagination a:hover {
+            background: #e7f1ff;
+        }
+
+        .current {
+            background: #007bff;
+            color: white;
+            border-color: #007bff !important;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            color: #007bff;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-form input,
+            .search-form button {
+                width: 100%;
+            }
+
+            .actions a {
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <h1>
+            👨‍🎓 Students
+        </h1>
+
+        <a
+            href="{% url 'student_add' %}"
+            class="add-btn"
+        >
+            ➕ Add Student
+        </a>
+
+    </div>
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for message in messages %}
+
+                <div class="message">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+    <form
+        method="GET"
+        class="search-form"
+    >
+
+        <input
+            type="text"
+            name="search"
+            placeholder="🔍 Search by name, roll no, email or phone..."
+            value="{{ search|default:'' }}"
+        >
+
+        <button type="submit">
+            🔍 Search
+        </button>
+
+    </form>
+
+    <div class="table-wrapper">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for student in students %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ student.name }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ student.roll_no }}
+                        </td>
+
+                        <td>
+                            {{ student.email }}
+                        </td>
+
+                        <td>
+                            {{ student.phone }}
+                        </td>
+
+                        <td class="actions">
+
+                            <a
+                                href="{% url 'student_detail' student.id %}"
+                                class="view"
+                            >
+                                👁️ View
+                            </a>
+
+                            <a
+                                href="{% url 'student_edit' student.id %}"
+                                class="edit"
+                            >
+                                ✏️ Edit
+                            </a>
+
+                            <a
+                                href="{% url 'student_delete' student.id %}"
+                                class="delete"
+                                onclick="return confirm('Are you sure you want to delete this student?');"
+                            >
+                                🗑️ Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+                            👨‍🎓 No students found.
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% if page_obj.has_other_pages %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    href="?page=1{% if search %}&search={{ search|urlencode }}{% endif %}"
+                >
+                    First
+                </a>
+
+                <a
+                    href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}"
+                >
+                    Previous
+                </a>
+
+            {% endif %}
+
+            <span class="current">
+
+                Page
+                {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+
+            </span>
+
+            {% if page_obj.has_next %}
+
+                <a
+                    href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search|urlencode }}{% endif %}"
+                >
+                    Next
+                </a>
+
+                <a
+                    href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search|urlencode }}{% endif %}"
+                >
+                    Last
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+    <a
+        href="{% url 'dashboard' %}"
+        class="back"
+    >
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+
+</html>

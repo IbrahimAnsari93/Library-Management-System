@@ -1,0 +1,744 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Library Management System</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/login.css' %}"
+    >
+
+</head>
+
+<body>
+
+<div class="login-page">
+
+    <!-- ============================= -->
+    <!-- LEFT HERO SECTION -->
+    <!-- ============================= -->
+
+    <div class="hero-section">
+
+        <div class="hero-content">
+
+            <div class="brand">
+
+                <div class="brand-icon">
+                    📚
+                </div>
+
+                <div>
+                    <h2>LIBRARY</h2>
+
+                    <span>
+                        MANAGEMENT SYSTEM
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="hero-text">
+
+                <p class="small-title">
+                    SMART • SIMPLE • SECURE
+                </p>
+
+                <h1>
+                    Manage knowledge.
+                    <span>
+                        Empower students.
+                    </span>
+                </h1>
+
+                <p class="hero-description">
+                    A modern library management platform designed
+                    to make books, students and library activities
+                    easier to manage.
+                </p>
+
+            </div>
+
+
+            <!-- FEATURES -->
+
+            <div class="features">
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        📖
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Book Management
+                        </h3>
+
+                        <p>
+                            Manage books and availability easily.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        👨‍🎓
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Student Management
+                        </h3>
+
+                        <p>
+                            Maintain student profiles securely.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="feature-card">
+
+                    <div class="feature-icon">
+                        🔐
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            Secure Access
+                        </h3>
+
+                        <p>
+                            Separate access for admin and students.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-footer">
+
+            © 2026 Library Management System
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- RIGHT LOGIN SECTION -->
+    <!-- ============================= -->
+
+    <div class="login-section">
+
+        <div class="login-container">
+
+
+            <!-- ============================= -->
+            <!-- ACCOUNT SELECTION -->
+            <!-- ============================= -->
+
+            <div
+                id="accountSelection"
+                class="account-selection"
+            >
+
+                <div class="welcome">
+
+                    <div class="secure-badge">
+                        🔒 SECURE PORTAL
+                    </div>
+
+                    <h1>
+                        Welcome Back
+                    </h1>
+
+                    <p>
+                        Select your account type to continue
+                    </p>
+
+                </div>
+
+
+                <div class="account-cards">
+
+
+                    <!-- ADMIN CARD -->
+
+                    <button
+                        type="button"
+                        class="account-card admin-card"
+                        onclick="showLogin('admin')"
+                    >
+
+                        <div class="account-icon">
+                            🛡️
+                        </div>
+
+                        <div class="account-info">
+
+                            <h2>
+                                Admin / Staff Login
+                            </h2>
+
+                            <p>
+                                Manage students, books,
+                                issues and reports.
+                            </p>
+
+                        </div>
+
+                        <div class="arrow">
+                            →
+                        </div>
+
+                    </button>
+
+
+                    <!-- STUDENT CARD -->
+
+                    <button
+                        type="button"
+                        class="account-card student-card"
+                        onclick="showLogin('student')"
+                    >
+
+                        <div class="account-icon">
+                            🎓
+                        </div>
+
+                        <div class="account-info">
+
+                            <h2>
+                                Student Login
+                            </h2>
+
+                            <p>
+                                View your profile,
+                                issued books and history.
+                            </p>
+
+                        </div>
+
+                        <div class="arrow">
+                            →
+                        </div>
+
+                    </button>
+
+                </div>
+
+
+                <div class="login-note">
+
+                    <span>
+                        🔐
+                    </span>
+
+                    <p>
+                        Your account information is protected
+                        with secure authentication.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- LOGIN BOX -->
+            <!-- ============================= -->
+
+            <div
+                id="loginBox"
+                class="login-box hidden"
+            >
+
+
+                <!-- BACK BUTTON -->
+
+                <button
+                    type="button"
+                    class="back-button"
+                    onclick="backToSelection()"
+                >
+                    ← Back
+                </button>
+
+
+                <!-- LOGIN HEADER -->
+
+                <div class="login-header">
+
+                    <div
+                        id="loginIcon"
+                        class="login-icon"
+                    >
+                        🛡️
+                    </div>
+
+                    <div>
+
+                        <div
+                            id="loginLabel"
+                            class="login-label"
+                        >
+                            ADMIN / STAFF
+                        </div>
+
+                        <h1>
+                            Sign In
+                        </h1>
+
+                        <p id="loginDescription">
+                            Access your library administration panel.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ============================= -->
+                <!-- DJANGO MESSAGES -->
+                <!-- ============================= -->
+
+                {% if messages %}
+
+                    <div class="messages">
+
+                        {% for message in messages %}
+
+                            <div class="message">
+
+                                {{ message }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ============================= -->
+                <!-- LOGIN FORM -->
+                <!-- ============================= -->
+
+                <form
+                    method="POST"
+                    action="{% url 'login' %}"
+                    class="login-form"
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- LOGIN TYPE -->
+
+                    <input
+                        type="hidden"
+                        name="login_type"
+                        id="loginType"
+                        value="admin"
+                    >
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="username">
+                            Email / Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter admin email or username"
+                            autocomplete="username"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword()"
+                                aria-label="Show or hide password"
+                            >
+                                👁
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STUDENT HELP -->
+
+                    <div
+                        id="studentHelp"
+                        class="student-help hidden"
+                    >
+
+                        <strong>
+                            Student Login
+                        </strong>
+
+                        <p>
+                            Username: your registered email
+                            <br>
+                            Password: your roll number
+                        </p>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="login-button"
+                        id="loginButton"
+                    >
+
+                        <span id="buttonText">
+                            Login as Admin
+                        </span>
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </form>
+
+
+                <!-- SECURITY INFO -->
+
+                <div class="security-info">
+
+                    <span>
+                        🔒
+                    </span>
+
+                    <p>
+                        Secure login • Authorized access only
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================= -->
+<!-- JAVASCRIPT -->
+<!-- ============================= -->
+
+<script>
+
+
+/* =========================================
+   SHOW LOGIN
+========================================= */
+
+function showLogin(type) {
+
+    const selection =
+        document.getElementById(
+            "accountSelection"
+        );
+
+    const loginBox =
+        document.getElementById(
+            "loginBox"
+        );
+
+    const loginType =
+        document.getElementById(
+            "loginType"
+        );
+
+    const loginIcon =
+        document.getElementById(
+            "loginIcon"
+        );
+
+    const loginLabel =
+        document.getElementById(
+            "loginLabel"
+        );
+
+    const loginDescription =
+        document.getElementById(
+            "loginDescription"
+        );
+
+    const username =
+        document.getElementById(
+            "username"
+        );
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+    const buttonText =
+        document.getElementById(
+            "buttonText"
+        );
+
+    const studentHelp =
+        document.getElementById(
+            "studentHelp"
+        );
+
+
+    /* Set login type */
+
+    loginType.value = type;
+
+
+    /* Hide selection */
+
+    selection.classList.add(
+        "hidden"
+    );
+
+
+    /* Show login */
+
+    loginBox.classList.remove(
+        "hidden"
+    );
+
+
+    /* Reset fields */
+
+    username.value = "";
+
+    password.value = "";
+
+
+    /* =====================================
+       ADMIN LOGIN
+    ===================================== */
+
+    if (type === "admin") {
+
+        loginIcon.textContent =
+            "🛡️";
+
+        loginLabel.textContent =
+            "ADMIN / STAFF";
+
+        loginDescription.textContent =
+            "Access your library administration panel.";
+
+        username.placeholder =
+            "Enter admin email or username";
+
+        buttonText.textContent =
+            "Login as Admin";
+
+        studentHelp.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /* =====================================
+       STUDENT LOGIN
+    ===================================== */
+
+    else {
+
+        loginIcon.textContent =
+            "🎓";
+
+        loginLabel.textContent =
+            "STUDENT";
+
+        loginDescription.textContent =
+            "Access your personal library dashboard.";
+
+        username.placeholder =
+            "Enter your registered email";
+
+        buttonText.textContent =
+            "Login as Student";
+
+        studentHelp.classList.remove(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   BACK TO ACCOUNT SELECTION
+========================================= */
+
+function backToSelection() {
+
+    const selection =
+        document.getElementById(
+            "accountSelection"
+        );
+
+    const loginBox =
+        document.getElementById(
+            "loginBox"
+        );
+
+    selection.classList.remove(
+        "hidden"
+    );
+
+    loginBox.classList.add(
+        "hidden"
+    );
+
+}
+
+
+/* =========================================
+   PASSWORD SHOW / HIDE
+========================================= */
+
+function togglePassword() {
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+    const button =
+        document.querySelector(
+            ".password-toggle"
+        );
+
+
+    if (
+        password.type === "password"
+    ) {
+
+        password.type = "text";
+
+        button.textContent =
+            "🙈";
+
+    }
+
+    else {
+
+        password.type =
+            "password";
+
+        button.textContent =
+            "👁";
+
+    }
+
+}
+
+
+/* =========================================
+   ENTER KEY SUPPORT
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            const loginBox =
+                document.getElementById(
+                    "loginBox"
+                );
+
+            if (
+                !loginBox.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                backToSelection();
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

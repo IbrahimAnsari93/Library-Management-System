@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .container {
+            width: 600px;
+            max-width: 95%;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .back-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: #545b62;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                width: 100%;
+                margin: 30px auto;
+                padding: 20px;
+            }
+
+            .buttons {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🎓 Add Student</h1>
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label for="name">
+            👤 Student Name
+        </label>
+
+        <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="Enter student name"
+            value="{{ name|default:'' }}"
+            required
+        >
+
+        <label for="roll_no">
+            🔢 Roll Number
+        </label>
+
+        <input
+            type="text"
+            id="roll_no"
+            name="roll_no"
+            placeholder="Enter roll number"
+            value="{{ roll_no|default:'' }}"
+            required
+        >
+
+        <label for="email">
+            📧 Email
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter email"
+            value="{{ email|default:'' }}"
+            required
+        >
+
+        <label for="phone">
+            📱 Phone
+        </label>
+
+        <input
+            type="text"
+            id="phone"
+            name="phone"
+            placeholder="Enter phone number"
+            value="{{ phone|default:'' }}"
+            required
+        >
+
+        <div class="buttons">
+
+            <a
+                href="{% url 'student_list' %}"
+                class="back-btn"
+            >
+                ← Cancel
+            </a>
+
+            <button type="submit">
+                ➕ Add Student
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

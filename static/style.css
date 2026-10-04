@@ -1,0 +1,822 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+}
+
+a {
+    text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+nav {
+    background: #1e3a8a;
+    color: white;
+    padding: 15px 5%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.brand {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.nav-links a {
+    color: white;
+    margin: 0 5px;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.nav-links a:hover {
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   DASHBOARD CONTAINER
+========================================================= */
+
+.dashboard-container {
+    width: 92%;
+    max-width: 1250px;
+    margin: 30px auto;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.top-header {
+    background: white;
+    padding: 25px 30px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 3px 15px #0001;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 25px;
+}
+
+.top-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #1f2937;
+}
+
+.top-header p {
+    margin: 8px 0 0;
+    color: #6b7280;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.logout-btn {
+    background: #dc2626;
+    color: white;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background: #b91c1c;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(210px, 1fr));
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+
+    padding: 22px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 3px 12px #0001;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    transition: 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 7px 20px #0002;
+}
+
+.stat-icon {
+    font-size: 35px;
+
+    width: 60px;
+    height: 60px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #f3f4f6;
+
+    border-radius: 12px;
+}
+
+.stat-card h3 {
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+.stat-card h2 {
+    margin: 7px 0 0;
+
+    font-size: 28px;
+
+    color: #111827;
+}
+
+
+/* =========================================================
+   STAT CARD BORDERS
+========================================================= */
+
+.students {
+    border-left: 5px solid #2563eb;
+}
+
+.books {
+    border-left: 5px solid #7c3aed;
+}
+
+.available {
+    border-left: 5px solid #16a34a;
+}
+
+.issued {
+    border-left: 5px solid #ea580c;
+}
+
+.returned {
+    border-left: 5px solid #059669;
+}
+
+.overdue {
+    border-left: 5px solid #dc2626;
+}
+
+.fine {
+    border-left: 5px solid #ca8a04;
+}
+
+
+/* =========================================================
+   SECTION CARD
+========================================================= */
+
+.section-card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 3px 12px #0001;
+
+    margin-bottom: 25px;
+}
+
+.section-card h2 {
+    margin-top: 0;
+    color: #1f2937;
+}
+
+.section-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+}
+
+.section-header a {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.section-header a:hover {
+    color: #1d4ed8;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-actions {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 15px;
+}
+
+.action-btn {
+    background: #2563eb;
+
+    color: white;
+
+    padding: 14px;
+
+    border-radius: 9px;
+
+    text-align: center;
+
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.action-btn:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: white;
+}
+
+th,
+td {
+    padding: 13px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    text-align: left;
+}
+
+th {
+    background: #1e3a8a;
+
+    color: white;
+
+    font-size: 14px;
+}
+
+tbody tr:hover {
+    background: #f9fafb;
+}
+
+td {
+    color: #374151;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status {
+    display: inline-block;
+
+    padding: 6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+}
+
+.returned-status {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.issued-status {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.late-status {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* =========================================================
+   OLD / COMMON CARDS
+========================================================= */
+
+.cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 20px;
+
+    margin: 20px 0 35px;
+}
+
+.card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 12px #0001;
+}
+
+.card p {
+    font-size: 32px;
+
+    font-weight: bold;
+
+    margin: 10px 0 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn {
+    display: inline-block;
+
+    border: 0;
+
+    background: #2563eb;
+
+    color: white;
+
+    padding: 10px 16px;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+.btn-danger {
+    background: #dc2626;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.danger {
+    color: #dc2626;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.danger:hover {
+    color: #b91c1c;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search {
+    display: flex;
+
+    gap: 10px;
+
+    margin: 20px 0;
+}
+
+.search input {
+    flex: 1;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form {
+    max-width: 600px;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    display: grid;
+
+    gap: 14px;
+
+    box-shadow: 0 3px 12px #0001;
+}
+
+.form label {
+    font-weight: bold;
+    color: #374151;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 7px;
+
+    background: white;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+
+    border-color: #2563eb;
+
+    box-shadow: 0 0 0 2px #2563eb22;
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.message {
+    background: #dcfce7;
+
+    border: 1px solid #86efac;
+
+    color: #166534;
+
+    padding: 12px;
+
+    margin-bottom: 15px;
+
+    border-radius: 7px;
+}
+
+.messages {
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   EMPTY DATA
+========================================================= */
+
+.empty,
+.no-record {
+    text-align: center;
+
+    padding: 25px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 25px;
+
+    flex-wrap: wrap;
+}
+
+.pagination a,
+.pagination span {
+    padding: 8px 12px;
+
+    border-radius: 6px;
+}
+
+.pagination a {
+    background: #2563eb;
+
+    color: white;
+}
+
+.pagination a:hover {
+    background: #1d4ed8;
+}
+
+.pagination .current {
+    background: #e5e7eb;
+
+    color: #374151;
+
+    font-weight: bold;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    text-align: center;
+
+    color: #6b7280;
+
+    padding: 20px;
+
+    margin-top: 20px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .dashboard-container {
+        width: 94%;
+        margin: 15px auto;
+    }
+
+    .container {
+        width: 95%;
+        margin: 20px auto;
+    }
+
+    .top-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        padding: 20px;
+    }
+
+    .top-header h1 {
+        font-size: 22px;
+    }
+
+    .user-section {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section-card {
+        padding: 18px;
+    }
+
+    .section-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        min-width: 700px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .page-head {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .search {
+        flex-direction: column;
+    }
+
+    .nav-links {
+        width: 100%;
+
+        justify-content: center;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 450px) {
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+
+        font-size: 28px;
+    }
+
+    .stat-card h2 {
+        font-size: 24px;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+
+}
+/* =========================
+   OVERDUE BOOKS GRAPH
+========================= */
+
+.overdue-chart-wrapper {
+    width: 100%;
+    margin-bottom: 24px;
+}
+
+.overdue-chart-header {
+    margin-bottom: 14px;
+}
+
+.overdue-chart-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.overdue-chart-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.overdue-chart-container {
+    position: relative;
+    width: 100%;
+    height: 260px;
+}
+
+.overdue-chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+
+    .overdue-chart-container {
+        height: 220px;
+    }
+
+}

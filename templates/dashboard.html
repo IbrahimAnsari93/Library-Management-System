@@ -1,0 +1,2319 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Library Management System{% endblock %}
+
+{% block content %}
+
+<style>
+
+    .dashboard-page {
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 28px 22px 50px;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .dashboard-header h1 {
+        margin: 0;
+        font-size: 30px;
+        color: #172033;
+    }
+
+    .dashboard-header p {
+        margin: 7px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .dashboard-date {
+        padding: 10px 14px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        background: #ffffff;
+        color: #4b5563;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+
+    /* =========================
+       STATISTICS
+    ========================== */
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 19px;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .stat-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 11px;
+        display: grid;
+        place-items: center;
+        font-size: 19px;
+        background: #f3f4f6;
+    }
+
+    .stat-value {
+        margin-top: 13px;
+        font-size: 28px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .stat-note {
+        margin-top: 5px;
+        font-size: 12px;
+        color: #8a94a6;
+    }
+
+    /* =========================
+       DASHBOARD GRID
+    ========================== */
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1.7fr 1fr;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .dashboard-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+        min-width: 0;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .card-title {
+        margin: 0;
+        color: #172033;
+        font-size: 18px;
+    }
+
+    .card-subtitle {
+        margin: 5px 0 0;
+        color: #7b8494;
+        font-size: 12px;
+    }
+
+    /* =========================
+       CHART
+    ========================== */
+
+    .chart-box {
+        height: 315px;
+        position: relative;
+    }
+
+    /* =========================
+       OVERDUE CHART
+    ========================== */
+
+    .overdue-chart-wrapper {
+        margin-bottom: 18px;
+        padding: 16px;
+        border: 1px solid #edf0f4;
+        border-radius: 14px;
+        background: #fbfcfd;
+    }
+
+    .overdue-chart-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .overdue-chart-subtitle {
+        margin: 5px 0 14px;
+        font-size: 12px;
+        color: #7b8494;
+    }
+
+    .overdue-chart-container {
+        height: 300px;
+        position: relative;
+    }
+
+    /* =========================
+       UTILIZATION
+    ========================== */
+
+    .utilization {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+    }
+
+    .utilization-circle {
+        width: 145px;
+        height: 145px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        background:
+            conic-gradient(
+                #2563eb {{ utilization_percentage }}%,
+                #e9edf3 0
+            );
+        position: relative;
+    }
+
+    .utilization-circle::after {
+        content: "";
+        position: absolute;
+        inset: 13px;
+        background: #ffffff;
+        border-radius: 50%;
+    }
+
+    .utilization-value {
+        position: relative;
+        z-index: 1;
+        font-size: 27px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .utilization-details {
+        flex: 1;
+    }
+
+    .utilization-details h3 {
+        margin: 0 0 10px;
+        font-size: 17px;
+        color: #172033;
+    }
+
+    .metric-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f2f5;
+        font-size: 13px;
+    }
+
+    .metric-row:last-child {
+        border-bottom: 0;
+    }
+
+    .metric-row span:first-child {
+        color: #6b7280;
+    }
+
+    .metric-row strong {
+        color: #172033;
+    }
+
+    /* =========================
+       FINE
+    ========================== */
+
+    .fine-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .fine-box {
+        padding: 15px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #edf0f4;
+    }
+
+    .fine-box span {
+        display: block;
+        color: #737d8d;
+        font-size: 12px;
+    }
+
+    .fine-box strong {
+        display: block;
+        margin-top: 7px;
+        color: #172033;
+        font-size: 20px;
+    }
+
+    /* =========================
+       TABLE
+    ========================== */
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    .dashboard-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 650px;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid #edf0f4;
+        font-size: 13px;
+    }
+
+    .dashboard-table th {
+        color: #6b7280;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        background: #fafbfc;
+    }
+
+    .dashboard-table td {
+        color: #374151;
+    }
+
+    .book-title {
+        font-weight: 700;
+        color: #172033;
+    }
+
+    /* =========================
+       STATUS
+    ========================== */
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 9px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .status-issued {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .status-returned {
+        background: #ecfdf5;
+        color: #047857;
+    }
+
+    .status-overdue {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .status-low {
+        background: #fffbeb;
+        color: #b45309;
+    }
+
+    .status-out {
+        background: #fef2f2;
+        color: #b91c1c;
+    }
+
+    /* =========================
+       ACTIVITY
+    ========================== */
+
+    .activity-list {
+        display: grid;
+        gap: 11px;
+    }
+
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px;
+        border: 1px solid #edf0f4;
+        border-radius: 12px;
+        background: #fbfcfd;
+    }
+
+    .activity-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        background: #eff6ff;
+        flex: 0 0 auto;
+    }
+
+    .activity-main {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .activity-main strong {
+        display: block;
+        color: #172033;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .activity-main span {
+        display: block;
+        margin-top: 3px;
+        color: #7b8494;
+        font-size: 11px;
+    }
+
+    .empty-state {
+        padding: 30px 15px;
+        text-align: center;
+        color: #8a94a6;
+        font-size: 13px;
+    }
+
+    /* =========================
+       QUICK LINKS
+    ========================== */
+
+    .quick-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .quick-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        text-decoration: none;
+        padding: 9px 12px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        color: #374151;
+        background: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .quick-link:hover {
+        background: #f8fafc;
+    }
+
+    /* =========================
+       ADVANCED CHART GRID
+    ========================== */
+
+    .advanced-chart-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    /* =========================
+       RESPONSIVE
+    ========================== */
+
+    @media (max-width: 1100px) {
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .advanced-chart-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 650px) {
+
+        .dashboard-page {
+            padding: 20px 14px 40px;
+        }
+
+        .dashboard-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .dashboard-header h1 {
+            font-size: 25px;
+        }
+
+        .dashboard-date {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .fine-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .utilization {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .chart-box {
+            height: 270px;
+        }
+
+        .overdue-chart-container {
+            height: 250px;
+        }
+    }
+
+</style>
+
+
+<div class="dashboard-page">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>
+                Library Dashboard
+            </h1>
+
+            <p>
+                Library operations, circulation, inventory and fine overview.
+            </p>
+
+        </div>
+
+        <div class="dashboard-date">
+            {{ today|date:"d M Y" }}
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MAIN STATISTICS
+    ========================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Book Titles
+                </span>
+
+                <div class="stat-icon">
+                    📚
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ total_books }}
+            </div>
+
+            <div class="stat-note">
+                {{ total_copies }} total copies
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Students
+                </span>
+
+                <div class="stat-icon">
+                    👨‍🎓
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ total_students }}
+            </div>
+
+            <div class="stat-note">
+                Registered library students
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Active Issues
+                </span>
+
+                <div class="stat-icon">
+                    📖
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ active_issues }}
+            </div>
+
+            <div class="stat-note">
+                {{ issued_copies }} copies currently issued
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-top">
+
+                <span class="stat-label">
+                    Overdue
+                </span>
+
+                <div class="stat-icon">
+                    ⚠️
+                </div>
+
+            </div>
+
+            <div class="stat-value">
+                {{ overdue_books }}
+            </div>
+
+            <div class="stat-note">
+                Books past their due date
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         FINE OVERVIEW
+    ========================== -->
+
+    <div
+        class="dashboard-card"
+        style="margin-bottom:18px;"
+    >
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Fine Overview
+                </h2>
+
+                <p class="card-subtitle">
+                    Current library fine collection status
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="fine-grid">
+
+            <div class="fine-box">
+
+                <span>
+                    Total Fine
+                </span>
+
+                <strong>
+                    ₹{{ total_fine }}
+                </strong>
+
+            </div>
+
+
+            <div class="fine-box">
+
+                <span>
+                    Collected
+                </span>
+
+                <strong>
+                    ₹{{ total_collected }}
+                </strong>
+
+            </div>
+
+
+            <div class="fine-box">
+
+                <span>
+                    Outstanding
+                </span>
+
+                <strong>
+                    ₹{{ total_outstanding }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         MONTHLY + UTILIZATION
+    ========================== -->
+
+    <div class="dashboard-grid">
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Monthly Circulation
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Issues and returns for {{ today|date:"Y" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-box">
+
+                <canvas id="monthlyCirculationChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Inventory Utilization
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Current circulation utilization
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="utilization">
+
+                <div class="utilization-circle">
+
+                    <div class="utilization-value">
+                        {{ utilization_percentage }}%
+                    </div>
+
+                </div>
+
+
+                <div class="utilization-details">
+
+                    <h3>
+                        Library Inventory
+                    </h3>
+
+
+                    <div class="metric-row">
+
+                        <span>
+                            Total copies
+                        </span>
+
+                        <strong>
+                            {{ total_copies }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="metric-row">
+
+                        <span>
+                            Available
+                        </span>
+
+                        <strong>
+                            {{ available_copies }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="metric-row">
+
+                        <span>
+                            Issued
+                        </span>
+
+                        <strong>
+                            {{ issued_copies }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="metric-row">
+
+                        <span>
+                            Returned transactions
+                        </span>
+
+                        <strong>
+                            {{ returned_books }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         INVENTORY STATUS
+    ========================== -->
+
+    <div
+        class="dashboard-card"
+        style="margin-bottom:18px;"
+    >
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Inventory Status
+                </h2>
+
+                <p class="card-subtitle">
+                    Book title availability across the library
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="chart-box">
+
+            <canvas id="inventoryStatusChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ADVANCED CHARTS
+    ========================== -->
+
+    <div class="advanced-chart-grid">
+
+        <!-- TOP BOOKS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Top Issued Books
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Most frequently issued books
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="topBooksChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- TOP STUDENTS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Top Students
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Students with the highest issue activity
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="topStudentsChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- CATEGORY DISTRIBUTION -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Category Distribution
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Book copies by category
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="categoryDistributionChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT STATUS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Fine Payment Status
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Current payment collection status
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="chart-box">
+
+                <canvas id="paymentStatusChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         RECENT CIRCULATION
+    ========================== -->
+
+    <div
+        class="dashboard-card"
+        style="margin-bottom:18px;"
+    >
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Recent Circulation
+                </h2>
+
+                <p class="card-subtitle">
+                    Latest book issue transactions
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-wrap">
+
+            <table class="dashboard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>
+                            Book
+                        </th>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Issue Date
+                        </th>
+
+                        <th>
+                            Due Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for issue in recent_issues %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="book-title">
+                                {{ issue.book.title }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ issue.student.name }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.issue_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.due_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.returned %}
+
+                                <span class="status status-returned">
+                                    Returned
+                                </span>
+
+                            {% elif issue.due_date < today %}
+
+                                <span class="status status-overdue">
+                                    Overdue
+                                </span>
+
+                            {% else %}
+
+                                <span class="status status-issued">
+                                    Issued
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="6">
+
+                            <div class="empty-state">
+                                No circulation transactions available.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         OVERDUE + RECENT BOOKS
+    ========================== -->
+
+    <div class="dashboard-grid">
+
+
+        <!-- OVERDUE BOOKS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Overdue Books
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Books requiring return attention
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if overdue_issues %}
+
+                <div class="overdue-chart-wrapper">
+
+                    <h3 class="overdue-chart-title">
+                        Overdue Analysis
+                    </h3>
+
+                    <p class="overdue-chart-subtitle">
+                        Number of days each book is overdue
+                    </p>
+
+
+                    <div class="overdue-chart-container">
+
+                        <canvas id="overdueBooksChart"></canvas>
+
+                    </div>
+
+                </div>
+
+
+                <div class="activity-list">
+
+                    {% for issue in overdue_issues %}
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            ⚠️
+                        </div>
+
+
+                        <div class="activity-main">
+
+                            <strong>
+                                {{ issue.book.title }}
+                            </strong>
+
+                            <span>
+
+                                {{ issue.student.name }}
+
+                                · Due
+
+                                {{ issue.due_date|date:"d M Y" }}
+
+                                ·
+
+                                {{ issue.late_days }}
+
+                                day(s) late
+
+                            </span>
+
+                        </div>
+
+
+                        <span class="status status-overdue">
+                            ₹{{ issue.current_fine }}
+                        </span>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    No overdue books.
+                    Everything is on schedule.
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- RECENT BOOKS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Recently Added Books
+                    </h2>
+
+                    <p class="card-subtitle">
+                        Latest inventory additions
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            {% if recent_books %}
+
+                <div class="activity-list">
+
+                    {% for book in recent_books %}
+
+                    <div class="activity-item">
+
+                        <div class="activity-icon">
+                            📚
+                        </div>
+
+
+                        <div class="activity-main">
+
+                            <strong>
+                                {{ book.title }}
+                            </strong>
+
+                            <span>
+                                {{ book.author }}
+                                ·
+                                {{ book.category }}
+                            </span>
+
+                        </div>
+
+
+                        {% if book.inventory_status == "In Stock" %}
+
+                            <span class="status status-returned">
+                                {{ book.available_quantity }}
+                            </span>
+
+                        {% elif book.inventory_status == "Low Stock" %}
+
+                            <span class="status status-low">
+                                {{ book.available_quantity }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="status status-out">
+                                0
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+                    No books have been added yet.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         QUICK ACTIONS
+    ========================== -->
+
+    <div class="dashboard-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <h2 class="card-title">
+                    Quick Actions
+                </h2>
+
+                <p class="card-subtitle">
+                    Frequently used library operations
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="quick-links">
+
+            <a
+                href="{% url 'add_book' %}"
+                class="quick-link"
+            >
+                ➕ Add Book
+            </a>
+
+
+            <a
+                href="{% url 'student_add' %}"
+                class="quick-link"
+            >
+                👨‍🎓 Add Student
+            </a>
+
+
+            <a
+                href="{% url 'issue_book' %}"
+                class="quick-link"
+            >
+                📖 Issue Book
+            </a>
+
+
+            <a
+                href="{% url 'book_list' %}"
+                class="quick-link"
+            >
+                📚 Book Inventory
+            </a>
+
+
+            <a
+                href="{% url 'student_list' %}"
+                class="quick-link"
+            >
+                👥 Students
+            </a>
+
+
+            <a
+                href="{% url 'reports' %}"
+                class="quick-link"
+            >
+                📊 Reports
+            </a>
+
+
+            <a
+                href="{% url 'inventory_dashboard' %}"
+                class="quick-link"
+            >
+                📦 Inventory Intelligence
+            </a>
+
+
+            <a
+                href="{% url 'notifications' %}"
+                class="quick-link"
+            >
+                🔔 Notifications
+
+                {% if unread_notification_count %}
+                    ({{ unread_notification_count }})
+                {% endif %}
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================
+     DJANGO DATA
+============================================================ -->
+
+{{ monthly_labels|json_script:"monthly-labels" }}
+
+{{ monthly_issued|json_script:"monthly-issued" }}
+
+{{ monthly_returned|json_script:"monthly-returned" }}
+
+
+{{ overdue_labels|json_script:"overdue-labels" }}
+
+{{ overdue_days|json_script:"overdue-days" }}
+
+
+<!-- ============================================================
+     ADVANCED CHART DATA
+============================================================ -->
+
+{{ top_books_labels|json_script:"top-books-labels" }}
+
+{{ top_books_data|json_script:"top-books-data" }}
+
+
+{{ top_students_labels|json_script:"top-students-labels" }}
+
+{{ top_students_data|json_script:"top-students-data" }}
+
+
+{{ category_labels|json_script:"category-labels" }}
+
+{{ category_values|json_script:"category-values" }}
+
+
+{{ payment_status_labels|json_script:"payment-status-labels" }}
+
+{{ payment_status_data|json_script:"payment-status-data" }}
+
+
+<!-- ============================================================
+     CHART.JS
+============================================================ -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       CHECK CHART.JS
+    ========================================================= */
+
+    if (typeof Chart === "undefined") {
+
+        console.error("Chart.js could not be loaded.");
+
+        return;
+    }
+
+
+    /* =========================================================
+       MONTHLY CIRCULATION CHART
+    ========================================================= */
+
+    const monthlyLabelsElement =
+        document.getElementById("monthly-labels");
+
+    const monthlyIssuedElement =
+        document.getElementById("monthly-issued");
+
+    const monthlyReturnedElement =
+        document.getElementById("monthly-returned");
+
+
+    if (
+        monthlyLabelsElement &&
+        monthlyIssuedElement &&
+        monthlyReturnedElement
+    ) {
+
+        const monthlyLabels =
+            JSON.parse(
+                monthlyLabelsElement.textContent
+            );
+
+        const monthlyIssued =
+            JSON.parse(
+                monthlyIssuedElement.textContent
+            );
+
+        const monthlyReturned =
+            JSON.parse(
+                monthlyReturnedElement.textContent
+            );
+
+
+        const monthlyCanvas =
+            document.getElementById(
+                "monthlyCirculationChart"
+            );
+
+
+        if (monthlyCanvas) {
+
+            new Chart(
+                monthlyCanvas,
+                {
+                    type: "line",
+
+                    data: {
+
+                        labels: monthlyLabels,
+
+                        datasets: [
+
+                            {
+                                label: "Issued",
+
+                                data: monthlyIssued,
+
+                                tension: 0.35,
+
+                                borderWidth: 2,
+
+                                fill: false
+                            },
+
+                            {
+                                label: "Returned",
+
+                                data: monthlyReturned,
+
+                                tension: 0.35,
+
+                                borderWidth: 2,
+
+                                fill: false
+                            }
+
+                        ]
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+                        plugins: {
+
+                            legend: {
+                                position: "bottom"
+                            }
+
+                        },
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+                                    precision: 0
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       INVENTORY STATUS CHART
+    ========================================================= */
+
+    const inventoryCanvas =
+        document.getElementById(
+            "inventoryStatusChart"
+        );
+
+
+    if (inventoryCanvas) {
+
+        new Chart(
+            inventoryCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: [
+                        "In Stock",
+                        "Low Stock",
+                        "Out of Stock"
+                    ],
+
+                    datasets: [
+
+                        {
+
+                            data: [
+
+                                {{ in_stock_count }},
+
+                                {{ low_stock_count }},
+
+                                {{ out_of_stock_count }}
+
+                            ],
+
+                            borderWidth: 2
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            position: "bottom"
+                        }
+
+                    },
+
+                    cutout: "68%"
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       TOP ISSUED BOOKS CHART
+    ========================================================= */
+
+    const topBooksLabelsElement =
+        document.getElementById(
+            "top-books-labels"
+        );
+
+    const topBooksDataElement =
+        document.getElementById(
+            "top-books-data"
+        );
+
+    const topBooksCanvas =
+        document.getElementById(
+            "topBooksChart"
+        );
+
+
+    if (
+        topBooksLabelsElement &&
+        topBooksDataElement &&
+        topBooksCanvas
+    ) {
+
+        const topBooksLabels =
+            JSON.parse(
+                topBooksLabelsElement.textContent
+            );
+
+        const topBooksData =
+            JSON.parse(
+                topBooksDataElement.textContent
+            );
+
+
+        new Chart(
+            topBooksCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: topBooksLabels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Times Issued",
+
+                            data: topBooksData,
+
+                            borderWidth: 1,
+
+                            borderRadius: 8,
+
+                            barPercentage: 0.65,
+
+                            categoryPercentage: 0.75
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            },
+
+                            title: {
+
+                                display: true,
+
+                                text: "Issue Count"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       TOP STUDENTS CHART
+    ========================================================= */
+
+    const topStudentsLabelsElement =
+        document.getElementById(
+            "top-students-labels"
+        );
+
+    const topStudentsDataElement =
+        document.getElementById(
+            "top-students-data"
+        );
+
+    const topStudentsCanvas =
+        document.getElementById(
+            "topStudentsChart"
+        );
+
+
+    if (
+        topStudentsLabelsElement &&
+        topStudentsDataElement &&
+        topStudentsCanvas
+    ) {
+
+        const topStudentsLabels =
+            JSON.parse(
+                topStudentsLabelsElement.textContent
+            );
+
+        const topStudentsData =
+            JSON.parse(
+                topStudentsDataElement.textContent
+            );
+
+
+        new Chart(
+            topStudentsCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: topStudentsLabels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Issues",
+
+                            data: topStudentsData,
+
+                            borderWidth: 1,
+
+                            borderRadius: 8,
+
+                            barPercentage: 0.65,
+
+                            categoryPercentage: 0.75
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    indexAxis: "y",
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        x: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            },
+
+                            title: {
+
+                                display: true,
+
+                                text: "Issue Count"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CATEGORY DISTRIBUTION CHART
+    ========================================================= */
+
+    const categoryLabelsElement =
+        document.getElementById(
+            "category-labels"
+        );
+
+    const categoryValuesElement =
+        document.getElementById(
+            "category-values"
+        );
+
+    const categoryCanvas =
+        document.getElementById(
+            "categoryDistributionChart"
+        );
+
+
+    if (
+        categoryLabelsElement &&
+        categoryValuesElement &&
+        categoryCanvas
+    ) {
+
+        const categoryLabels =
+            JSON.parse(
+                categoryLabelsElement.textContent
+            );
+
+        const categoryValues =
+            JSON.parse(
+                categoryValuesElement.textContent
+            );
+
+
+        new Chart(
+            categoryCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: categoryLabels,
+
+                    datasets: [
+
+                        {
+
+                            data: categoryValues,
+
+                            borderWidth: 2
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    },
+
+                    cutout: "58%"
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       PAYMENT STATUS CHART
+    ========================================================= */
+
+    const paymentStatusLabelsElement =
+        document.getElementById(
+            "payment-status-labels"
+        );
+
+    const paymentStatusDataElement =
+        document.getElementById(
+            "payment-status-data"
+        );
+
+    const paymentStatusCanvas =
+        document.getElementById(
+            "paymentStatusChart"
+        );
+
+
+    if (
+        paymentStatusLabelsElement &&
+        paymentStatusDataElement &&
+        paymentStatusCanvas
+    ) {
+
+        const paymentStatusLabels =
+            JSON.parse(
+                paymentStatusLabelsElement.textContent
+            );
+
+        const paymentStatusData =
+            JSON.parse(
+                paymentStatusDataElement.textContent
+            );
+
+
+        new Chart(
+            paymentStatusCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: paymentStatusLabels,
+
+                    datasets: [
+
+                        {
+
+                            data: paymentStatusData,
+
+                            borderWidth: 2
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "bottom"
+
+                        }
+
+                    },
+
+                    cutout: "62%"
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       OVERDUE BOOKS CHART
+    ========================================================= */
+
+    const overdueLabelsElement =
+        document.getElementById(
+            "overdue-labels"
+        );
+
+
+    const overdueDaysElement =
+        document.getElementById(
+            "overdue-days"
+        );
+
+
+    const overdueCanvas =
+        document.getElementById(
+            "overdueBooksChart"
+        );
+
+
+    console.log(
+        "Overdue Canvas:",
+        overdueCanvas
+    );
+
+
+    console.log(
+        "Overdue Labels Element:",
+        overdueLabelsElement
+    );
+
+
+    console.log(
+        "Overdue Days Element:",
+        overdueDaysElement
+    );
+
+
+    if (
+        overdueLabelsElement &&
+        overdueDaysElement &&
+        overdueCanvas
+    ) {
+
+        const overdueLabels =
+            JSON.parse(
+                overdueLabelsElement.textContent
+            );
+
+
+        const overdueDays =
+            JSON.parse(
+                overdueDaysElement.textContent
+            );
+
+
+        console.log(
+            "Overdue Labels:",
+            overdueLabels
+        );
+
+
+        console.log(
+            "Overdue Days:",
+            overdueDays
+        );
+
+
+        if (overdueLabels.length > 0) {
+
+            new Chart(
+                overdueCanvas,
+                {
+
+                    type: "bar",
+
+                    data: {
+
+                        labels: overdueLabels,
+
+                        datasets: [
+
+                            {
+
+                                label: "Days Late",
+
+                                data: overdueDays,
+
+                                backgroundColor: "#ef4444",
+
+                                borderColor: "#dc2626",
+
+                                borderWidth: 1,
+
+                                borderRadius: 8,
+
+                                barPercentage: 0.65,
+
+                                categoryPercentage: 0.75
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive: true,
+
+                        maintainAspectRatio: false,
+
+
+                        plugins: {
+
+                            legend: {
+                                display: false
+                            },
+
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label: function (context) {
+
+                                        return (
+                                            context.raw +
+                                            " day(s) late"
+                                        );
+
+                                    }
+
+                                }
+
+                            }
+
+                        },
+
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero: true,
+
+                                ticks: {
+
+                                    precision: 0
+
+                                },
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Days Late"
+
+                                }
+
+                            },
+
+
+                            x: {
+
+                                title: {
+
+                                    display: true,
+
+                                    text: "Book"
+
+                                },
+
+                                ticks: {
+
+                                    maxRotation: 35,
+
+                                    minRotation: 0
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            );
+
+        }
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

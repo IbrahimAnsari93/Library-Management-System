@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Library Management System
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+
+    <style>
+
+        /* =====================================
+           GLOBAL NAVBAR
+        ===================================== */
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 20px;
+
+            position: relative;
+            z-index: 1000;
+
+            width: 100%;
+            box-sizing: border-box;
+
+            padding: 0 28px;
+        }
+
+
+        /* =====================================
+           BRAND
+        ===================================== */
+
+        .brand {
+            display: flex;
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 24px;
+            font-weight: 800;
+
+            white-space: nowrap;
+
+            min-width: 0;
+        }
+
+
+        /* =====================================
+           NAV LINKS
+        ===================================== */
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+
+            gap: 6px;
+
+            flex-wrap: nowrap;
+
+            min-width: 0;
+        }
+
+
+        .nav-links > a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            min-height: 42px;
+
+            padding: 0 13px;
+
+            border-radius: 9px;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            transition:
+                background 0.2s ease,
+                color 0.2s ease;
+        }
+
+
+        .nav-links > a:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+
+        /* =====================================
+           NOTIFICATION WRAPPER
+        ===================================== */
+
+        .notification-wrapper {
+            position: relative;
+
+            margin-left: 3px;
+
+            flex: 0 0 auto;
+        }
+
+
+        /* =====================================
+           NOTIFICATION BUTTON
+        ===================================== */
+
+        .notification-button {
+            width: 42px;
+            height: 42px;
+
+            border: 1px solid rgba(255, 255, 255, 0.18);
+
+            border-radius: 10px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            font-size: 19px;
+
+            position: relative;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+        }
+
+
+        .notification-button:hover {
+            background: rgba(255, 255, 255, 0.16);
+
+            transform: translateY(-1px);
+        }
+
+
+        .notification-button:active {
+            transform: scale(0.96);
+        }
+
+
+        /* =====================================
+           NOTIFICATION BADGE
+        ===================================== */
+
+        .notification-badge {
+            position: absolute;
+
+            top: -3px;
+            right: -3px;
+
+            min-width: 18px;
+            height: 18px;
+
+            padding: 0 4px;
+
+            border-radius: 20px;
+
+            background: #ef4444;
+
+            color: white;
+
+            font-size: 10px;
+            font-weight: 800;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid #243f8f;
+
+            line-height: 1;
+        }
+
+
+        /* =====================================
+           DROPDOWN
+        ===================================== */
+
+        .notification-dropdown {
+            position: absolute;
+
+            top: 51px;
+            right: 0;
+
+            width: 370px;
+
+            max-width: calc(100vw - 24px);
+
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 20px 50px rgba(15, 23, 42, 0.18);
+
+            overflow: hidden;
+
+            display: none;
+
+            animation:
+                notificationDrop 0.18s ease;
+        }
+
+
+        .notification-dropdown.show {
+            display: block;
+        }
+
+
+        @keyframes notificationDrop {
+
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+
+        /* =====================================
+           DROPDOWN HEADER
+        ===================================== */
+
+        .notification-dropdown-header {
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 12px;
+
+            padding: 16px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            background: #ffffff;
+        }
+
+
+        .notification-dropdown-header h3 {
+            margin: 0;
+
+            font-size: 15px;
+
+            color: #111827;
+        }
+
+
+        .notification-count {
+            background: #eef2ff;
+
+            color: #4f46e5;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            white-space: nowrap;
+        }
+
+
+        /* =====================================
+           NOTIFICATION ITEMS
+        ===================================== */
+
+        .notification-items {
+            max-height: 350px;
+
+            overflow-y: auto;
+
+            overscroll-behavior: contain;
+        }
+
+
+        .notification-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+
+        .notification-items::-webkit-scrollbar-track {
+            background: #f9fafb;
+        }
+
+
+        .notification-items::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+
+            border-radius: 20px;
+        }
+
+
+        .notification-item {
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 12px;
+
+            padding: 14px 16px;
+
+            text-decoration: none;
+
+            border-bottom: 1px solid #f3f4f6;
+
+            transition:
+                background 0.2s ease;
+        }
+
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+
+
+        .notification-item.unread {
+            background: #f7f7ff;
+        }
+
+
+        .notification-item.unread:hover {
+            background: #f0f1ff;
+        }
+
+
+        /* =====================================
+           NOTIFICATION ICON
+        ===================================== */
+
+        .notification-item-icon {
+            min-width: 38px;
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 16px;
+
+            flex: 0 0 auto;
+        }
+
+
+        .notification-item-icon.overdue {
+            background: #fee2e2;
+        }
+
+
+        .notification-item-icon.due-soon {
+            background: #fef3c7;
+        }
+
+
+        .notification-item-icon.low-stock {
+            background: #ffedd5;
+        }
+
+
+        .notification-item-icon.out-of-stock {
+            background: #e5e7eb;
+        }
+
+
+        .notification-item-icon.fine {
+            background: #dcfce7;
+        }
+
+
+        /* =====================================
+           NOTIFICATION CONTENT
+        ===================================== */
+
+        .notification-item-content {
+            flex: 1;
+
+            min-width: 0;
+        }
+
+
+        .notification-item-title {
+            margin: 0 0 4px;
+
+            font-size: 13px;
+
+            font-weight: 750;
+
+            color: #111827;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            white-space: nowrap;
+        }
+
+
+        .notification-item-message {
+            margin: 0;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+
+            color: #6b7280;
+
+            display: -webkit-box;
+
+            -webkit-line-clamp: 2;
+
+            -webkit-box-orient: vertical;
+
+            overflow: hidden;
+        }
+
+
+        .notification-item-time {
+            margin-top: 5px;
+
+            font-size: 10px;
+
+            color: #9ca3af;
+        }
+
+
+        /* =====================================
+           DROPDOWN FOOTER
+        ===================================== */
+
+        .notification-dropdown-footer {
+            padding: 12px 16px;
+
+            border-top: 1px solid #e5e7eb;
+
+            text-align: center;
+
+            background: #ffffff;
+        }
+
+
+        .notification-dropdown-footer a {
+            color: #4f46e5;
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            font-weight: 800;
+        }
+
+
+        .notification-dropdown-footer a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =====================================
+           EMPTY STATE
+        ===================================== */
+
+        .notification-empty {
+            padding: 35px 20px;
+
+            text-align: center;
+
+            color: #9ca3af;
+
+            font-size: 13px;
+        }
+
+
+        /* =====================================
+           MOBILE NAVBAR
+        ===================================== */
+
+        @media (max-width: 900px) {
+
+            nav {
+                padding: 12px 18px;
+
+                flex-direction: column;
+
+                align-items: stretch;
+
+                gap: 10px;
+            }
+
+
+            .brand {
+                justify-content: center;
+
+                font-size: 21px;
+            }
+
+
+            .nav-links {
+                justify-content: center;
+
+                flex-wrap: wrap;
+
+                width: 100%;
+            }
+
+        }
+
+
+        /* =====================================
+           SMALL MOBILE
+        ===================================== */
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding: 12px 12px;
+            }
+
+
+            .brand {
+                font-size: 19px;
+
+                white-space: normal;
+
+                text-align: center;
+
+                line-height: 1.3;
+            }
+
+
+            .nav-links {
+                gap: 4px;
+            }
+
+
+            .nav-links > a {
+                min-height: 38px;
+
+                padding: 0 9px;
+
+                font-size: 12px;
+            }
+
+
+            .notification-button {
+                width: 38px;
+                height: 38px;
+            }
+
+
+            .notification-dropdown {
+
+                position: fixed;
+
+                top: 108px;
+
+                left: 12px;
+                right: 12px;
+
+                width: auto;
+
+                max-width: none;
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================
+     NAVBAR
+===================================== -->
+
+<nav>
+
+
+    <!-- BRAND -->
+
+    <div class="brand">
+
+        📚
+
+        <span>
+            Library Management System
+        </span>
+
+    </div>
+
+
+    <!-- NAV LINKS -->
+
+    <div class="nav-links">
+
+
+        <a href="/">
+            Dashboard
+        </a>
+
+
+        <a href="/books/">
+            Books
+        </a>
+
+
+        <a href="/students/">
+            Students
+        </a>
+
+
+        <a href="/issue/">
+            Issue Book
+        </a>
+
+
+        <a href="/admin/">
+            Admin
+        </a>
+
+
+        <!-- =================================
+             NOTIFICATIONS
+        ================================== -->
+
+        {% if request.user.is_authenticated and request.user.is_staff %}
+
+
+            <div class="notification-wrapper">
+
+
+                <button
+                    type="button"
+                    class="notification-button"
+                    id="notificationButton"
+                    aria-label="Notifications"
+                    aria-expanded="false"
+                    aria-controls="notificationDropdown"
+                >
+
+                    🔔
+
+
+                    {% if navbar_unread_count > 0 %}
+
+                        <span class="notification-badge">
+
+                            {% if navbar_unread_count > 99 %}
+
+                                99+
+
+                            {% else %}
+
+                                {{ navbar_unread_count }}
+
+                            {% endif %}
+
+                        </span>
+
+                    {% endif %}
+
+                </button>
+
+
+                <!-- =================================
+                     NOTIFICATION DROPDOWN
+                ================================== -->
+
+                <div
+                    class="notification-dropdown"
+                    id="notificationDropdown"
+                >
+
+
+                    <!-- HEADER -->
+
+                    <div class="notification-dropdown-header">
+
+                        <h3>
+                            🔔 Notifications
+                        </h3>
+
+
+                        {% if navbar_unread_count > 0 %}
+
+                            <span class="notification-count">
+
+                                {{ navbar_unread_count }}
+
+                                unread
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="notification-count">
+
+                                All clear
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- ITEMS -->
+
+                    <div class="notification-items">
+
+
+                        {% if navbar_notifications %}
+
+
+                            {% for notification in navbar_notifications %}
+
+
+                                <a
+                                    href="{% url 'notifications' %}"
+                                    class="notification-item {% if not notification.is_read %}unread{% endif %}"
+                                >
+
+
+                                    <!-- ICON -->
+
+                                    <div
+                                        class="notification-item-icon
+                                        {% if notification.notification_type == 'overdue' %}
+                                            overdue
+                                        {% elif notification.notification_type == 'due_soon' %}
+                                            due-soon
+                                        {% elif notification.notification_type == 'low_stock' %}
+                                            low-stock
+                                        {% elif notification.notification_type == 'out_of_stock' %}
+                                            out-of-stock
+                                        {% elif notification.notification_type == 'fine' %}
+                                            fine
+                                        {% endif %}"
+                                    >
+
+
+                                        {% if notification.notification_type == "overdue" %}
+
+                                            ⚠️
+
+
+                                        {% elif notification.notification_type == "due_soon" %}
+
+                                            📅
+
+
+                                        {% elif notification.notification_type == "low_stock" %}
+
+                                            📦
+
+
+                                        {% elif notification.notification_type == "out_of_stock" %}
+
+                                            🚫
+
+
+                                        {% elif notification.notification_type == "fine" %}
+
+                                            💰
+
+
+                                        {% else %}
+
+                                            🔔
+
+                                        {% endif %}
+
+
+                                    </div>
+
+
+                                    <!-- CONTENT -->
+
+                                    <div class="notification-item-content">
+
+
+                                        <p class="notification-item-title">
+
+                                            {{ notification.title }}
+
+                                        </p>
+
+
+                                        <p class="notification-item-message">
+
+                                            {{ notification.message }}
+
+                                        </p>
+
+
+                                        <div class="notification-item-time">
+
+                                            {{ notification.created_at|date:"d M Y, h:i A" }}
+
+                                        </div>
+
+
+                                    </div>
+
+
+                                </a>
+
+
+                            {% endfor %}
+
+
+                        {% else %}
+
+
+                            <div class="notification-empty">
+
+                                🔔
+
+                                <br><br>
+
+                                No notifications available.
+
+                            </div>
+
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <!-- FOOTER -->
+
+                    <div class="notification-dropdown-footer">
+
+
+                        <a href="{% url 'notifications' %}">
+
+                            View All Notifications →
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</nav>
+
+
+<!-- =====================================
+     MAIN CONTENT
+===================================== -->
+
+<main class="container">
+
+
+    {% for message in messages %}
+
+        <div class="message">
+
+            {{ message }}
+
+        </div>
+
+    {% endfor %}
+
+
+    {% block content %}
+
+    {% endblock %}
+
+
+</main>
+
+
+<!-- =====================================
+     NOTIFICATION JAVASCRIPT
+===================================== -->
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+
+            const button =
+                document.getElementById(
+                    "notificationButton"
+                );
+
+
+            const dropdown =
+                document.getElementById(
+                    "notificationDropdown"
+                );
+
+
+            if (!button || !dropdown) {
+
+                return;
+
+            }
+
+
+            /* =================================
+               OPEN / CLOSE DROPDOWN
+            ================================= */
+
+            button.addEventListener(
+                "click",
+                function (event) {
+
+
+                    event.stopPropagation();
+
+
+                    const isOpen =
+                        dropdown.classList.toggle(
+                            "show"
+                        );
+
+
+                    button.setAttribute(
+                        "aria-expanded",
+                        isOpen ? "true" : "false"
+                    );
+
+                }
+            );
+
+
+            /* =================================
+               CLOSE WHEN CLICKING OUTSIDE
+            ================================= */
+
+            document.addEventListener(
+                "click",
+                function (event) {
+
+
+                    if (
+                        !dropdown.contains(
+                            event.target
+                        )
+                        &&
+                        !button.contains(
+                            event.target
+                        )
+                    ) {
+
+
+                        dropdown.classList.remove(
+                            "show"
+                        );
+
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            /* =================================
+               CLOSE WITH ESCAPE
+            ================================= */
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+
+                    if (
+                        event.key === "Escape"
+                    ) {
+
+
+                        dropdown.classList.remove(
+                            "show"
+                        );
+
+
+                        button.setAttribute(
+                            "aria-expanded",
+                            "false"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        }
+    );
+
+</script>
+
+
+</body>
+
+</html>

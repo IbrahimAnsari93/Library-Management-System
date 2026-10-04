@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .report-wrapper {
+        padding: 24px;
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .report-title h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .report-title p {
+        margin: 5px 0 0;
+        color: #6c757d;
+    }
+
+    .filter-card,
+    .table-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .filter-group input {
+        min-width: 260px;
+    }
+
+    .filter-group select {
+        min-width: 180px;
+    }
+
+    .table-card h5 {
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eeeeee;
+        vertical-align: middle;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-issued {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-returned {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-late {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 20px;
+        color: #6c757d;
+    }
+
+    .result-count {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    @media (max-width: 700px) {
+        .report-wrapper {
+            padding: 15px;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .report-table {
+            min-width: 950px;
+        }
+    }
+</style>
+
+
+<div class="report-wrapper">
+
+    <!-- HEADER -->
+    <div class="report-header">
+
+        <div class="report-title">
+
+            <h2>
+                Issue Report
+            </h2>
+
+            <p>
+                Complete book issue and circulation records
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'reports' %}"
+            class="btn btn-secondary"
+        >
+            ← Back to Reports
+        </a>
+
+    </div>
+
+
+    <!-- FILTERS -->
+    <div class="filter-card">
+
+        <form method="get" class="filter-form">
+
+            <div class="filter-group">
+
+                <label for="q">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    value="{{ search }}"
+                    class="form-control"
+                    placeholder="Student, roll no., book or ISBN"
+                >
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                    class="form-select"
+                >
+
+                    <option value="">
+                        All
+                    </option>
+
+                    <option
+                        value="issued"
+                        {% if status == "issued" %}selected{% endif %}
+                    >
+                        Issued
+                    </option>
+
+                    <option
+                        value="returned"
+                        {% if status == "returned" %}selected{% endif %}
+                    >
+                        Returned
+                    </option>
+
+                    <option
+                        value="late"
+                        {% if status == "late" %}selected{% endif %}
+                    >
+                        Late
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Search
+            </button>
+
+
+            {% if search or status %}
+
+            <a
+                href="{% url 'issue_report' %}"
+                class="btn btn-outline-secondary"
+            >
+                Clear
+            </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <div class="table-card">
+
+        <h5>
+            Issue Records
+        </h5>
+
+        <div class="result-count">
+
+            {% if issues %}
+                {{ issues|length }} record(s) found
+            {% else %}
+                No records found
+            {% endif %}
+
+        </div>
+
+
+        {% if issues %}
+
+        <div class="table-responsive">
+
+            <table class="report-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Student</th>
+
+                        <th>Roll No.</th>
+
+                        <th>Book</th>
+
+                        <th>ISBN</th>
+
+                        <th>Issue Date</th>
+
+                        <th>Due Date</th>
+
+                        <th>Return Date</th>
+
+                        <th>Status</th>
+
+                        <th>Fine</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for issue in issues %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+                            <strong>
+                                {{ issue.student.name }}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            {{ issue.student.roll_no }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.book.title }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.book.isbn }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.issue_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.due_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.return_date %}
+
+                                {{ issue.return_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.returned %}
+
+                                <span class="status-badge status-returned">
+                                    Returned
+                                </span>
+
+                            {% elif issue.late_days > 0 %}
+
+                                <span class="status-badge status-late">
+                                    Late
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-issued">
+                                    Issued
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            ₹{{ issue.fine }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <h5>
+                No Issue Records Found
+            </h5>
+
+            <p>
+                No records match your current search or filter.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

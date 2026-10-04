@@ -1,0 +1,352 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ page_title }} | Library Management System</title>
+
+    <link rel="stylesheet" href="{% static 'css/student_form.css' %}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">📚</div>
+
+            <div>
+                <h2>School Library</h2>
+                <span>Management System</span>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <p class="section-title">MAIN MENU</p>
+
+            <a href="{% url 'dashboard' %}" class="menu-item">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'book_list' %}" class="menu-item">
+                <span>📚</span>
+                <span>Catalog</span>
+            </a>
+
+            <a href="{% url 'issue_list' %}" class="menu-item">
+                <span>🔄</span>
+                <span>Circulation</span>
+            </a>
+
+            <a href="{% url 'student_list' %}" class="menu-item active">
+                <span>👥</span>
+                <span>Members</span>
+            </a>
+
+            <a href="{% url 'book_list' %}" class="menu-item">
+                <span>💻</span>
+                <span>E-Books</span>
+            </a>
+
+            <a href="{% url 'issue_list' %}" class="menu-item">
+                <span>💰</span>
+                <span>Fine Management</span>
+            </a>
+
+            <a href="{% url 'reports' %}" class="menu-item">
+                <span>📈</span>
+                <span>Reports & Analytics</span>
+            </a>
+
+            <a href="{% url 'issue_list' %}" class="menu-item">
+                <span>🔔</span>
+                <span>SMS & Alerts</span>
+            </a>
+        </div>
+
+        <div class="sidebar-section bottom-section">
+
+            <p class="section-title">SYSTEM</p>
+
+            <a href="{% url 'admin:index' %}" class="menu-item">
+                <span>⚙️</span>
+                <span>System Settings</span>
+            </a>
+
+            <a href="{% url 'logout' %}" class="menu-item logout">
+                <span>🚪</span>
+                <span>Logout</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+        <!-- TOP HEADER -->
+        <header class="topbar">
+
+            <div>
+                <p class="breadcrumb">
+                    Members / {% if student %}Edit Member{% else %}Add Member{% endif %}
+                </p>
+
+                <h1>{{ page_title }}</h1>
+
+                <p class="subtitle">
+                    {% if student %}
+                        Update student information and account details.
+                    {% else %}
+                        Create a new student member account.
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="profile">
+
+                <div class="profile-avatar">
+                    {{ request.user.username|first|upper }}
+                </div>
+
+                <div class="profile-info">
+                    <strong>{{ request.user.username }}</strong>
+                    <span>Administrator</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- FORM CARD -->
+        <section class="content">
+
+            <div class="form-wrapper">
+
+                <div class="form-card">
+
+                    <div class="form-header">
+
+                        <div class="form-icon">
+                            {% if student %}
+                                ✏️
+                            {% else %}
+                                👤
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <h2>
+                                {% if student %}
+                                    Edit Member Information
+                                {% else %}
+                                    New Member Information
+                                {% endif %}
+                            </h2>
+
+                            <p>
+                                Enter the student's information below.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    {% if messages %}
+
+                        {% for message in messages %}
+
+                            <div class="message {{ message.tags }}">
+                                {{ message }}
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+
+                    <form method="POST" class="member-form">
+
+                        {% csrf_token %}
+
+
+                        {% if form.non_field_errors %}
+
+                            <div class="form-error-box">
+
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="form-grid">
+
+
+                            <!-- NAME -->
+                            <div class="form-group">
+
+                                <label for="{{ form.name.id_for_label }}">
+                                    Full Name
+                                </label>
+
+                                {{ form.name }}
+
+                                {% if form.name.errors %}
+                                    <div class="field-error">
+                                        {{ form.name.errors.0 }}
+                                    </div>
+                                {% endif %}
+
+                                <small>
+                                    Enter the student's full name.
+                                </small>
+
+                            </div>
+
+
+                            <!-- ROLL NUMBER -->
+                            <div class="form-group">
+
+                                <label for="{{ form.roll_no.id_for_label }}">
+                                    Roll Number
+                                </label>
+
+                                {{ form.roll_no }}
+
+                                {% if form.roll_no.errors %}
+                                    <div class="field-error">
+                                        {{ form.roll_no.errors.0 }}
+                                    </div>
+                                {% endif %}
+
+                                <small>
+                                    Roll number will also be used as the student's password.
+                                </small>
+
+                            </div>
+
+
+                            <!-- EMAIL -->
+                            <div class="form-group">
+
+                                <label for="{{ form.email.id_for_label }}">
+                                    Email Address
+                                </label>
+
+                                {{ form.email }}
+
+                                {% if form.email.errors %}
+                                    <div class="field-error">
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                {% endif %}
+
+                                <small>
+                                    Student will use this email for login.
+                                </small>
+
+                            </div>
+
+
+                            <!-- PHONE -->
+                            <div class="form-group">
+
+                                <label for="{{ form.phone.id_for_label }}">
+                                    Phone Number
+                                </label>
+
+                                {{ form.phone }}
+
+                                {% if form.phone.errors %}
+                                    <div class="field-error">
+                                        {{ form.phone.errors.0 }}
+                                    </div>
+                                {% endif %}
+
+                                <small>
+                                    Enter a valid 10-digit mobile number.
+                                </small>
+
+                            </div>
+
+
+                        </div>
+
+
+                        <!-- LOGIN INFORMATION -->
+                        <div class="login-info">
+
+                            <div class="info-icon">
+                                🔐
+                            </div>
+
+                            <div>
+
+                                <h3>Student Login Information</h3>
+
+                                <p>
+                                    Username:
+                                    <strong>Student Email</strong>
+                                </p>
+
+                                <p>
+                                    Password:
+                                    <strong>Roll Number</strong>
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- BUTTONS -->
+                        <div class="form-actions">
+
+                            <a
+                                href="{% url 'student_list' %}"
+                                class="btn btn-secondary"
+                            >
+                                ← Cancel
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                {% if student %}
+                                    ✓ Update Member
+                                {% else %}
+                                    + Add Member
+                                {% endif %}
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

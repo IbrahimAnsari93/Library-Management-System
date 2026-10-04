@@ -1,0 +1,709 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .book-form-wrapper {
+        max-width: 1100px;
+        margin: 30px auto;
+        padding: 0 20px 40px;
+    }
+
+    .book-form-header {
+        margin-bottom: 25px;
+    }
+
+    .book-form-header h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .book-form-header p {
+        margin-top: 8px;
+        color: #6b7280;
+    }
+
+    .book-form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 18px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #374151;
+    }
+
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 9px;
+        font-size: 14px;
+        background: #ffffff;
+        transition: 0.2s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .help-text {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .field-error {
+        margin-top: 6px;
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+    .non-field-error {
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        color: #b91c1c;
+    }
+
+    .image-upload-box {
+        border: 2px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 25px;
+        text-align: center;
+        background: #f8fafc;
+        transition: 0.2s ease;
+    }
+
+    .image-upload-box:hover {
+        border-color: #2563eb;
+        background: #eff6ff;
+    }
+
+    .upload-icon {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .upload-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+
+    .upload-description {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .current-image {
+        margin-top: 20px;
+    }
+
+    .current-image p {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .current-image img {
+        width: 150px;
+        height: 210px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .image-preview {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .image-preview img {
+        width: 150px;
+        height: 210px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+        border: none;
+        border-radius: 9px;
+        padding: 12px 22px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-secondary:hover {
+        background: #e5e7eb;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group.full-width {
+            grid-column: auto;
+        }
+
+        .book-form-card {
+            padding: 20px;
+        }
+
+        .book-form-header h1 {
+            font-size: 24px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="book-form-wrapper">
+
+    <!-- Header -->
+    <div class="book-form-header">
+
+        {% if book %}
+            <h1>✏️ Edit Book</h1>
+            <p>Update book information and catalog details.</p>
+        {% else %}
+            <h1>📚 Add New Book</h1>
+            <p>Add a new book to your library catalog.</p>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Form Card -->
+    <div class="book-form-card">
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+            novalidate
+        >
+
+            {% csrf_token %}
+
+
+            <!-- Non Field Errors -->
+            {% if form.non_field_errors %}
+                <div class="non-field-error">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+
+            <!-- Basic Information -->
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    📖 Basic Book Information
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- Title -->
+                    <div class="form-group">
+
+                        <label for="{{ form.title.id_for_label }}">
+                            Book Title <span class="required">*</span>
+                        </label>
+
+                        {{ form.title }}
+
+                        {% for error in form.title.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Author -->
+                    <div class="form-group">
+
+                        <label for="{{ form.author.id_for_label }}">
+                            Author <span class="required">*</span>
+                        </label>
+
+                        {{ form.author }}
+
+                        {% for error in form.author.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- ISBN -->
+                    <div class="form-group">
+
+                        <label for="{{ form.isbn.id_for_label }}">
+                            ISBN <span class="required">*</span>
+                        </label>
+
+                        {{ form.isbn }}
+
+                        {% for error in form.isbn.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Category -->
+                    <div class="form-group">
+
+                        <label for="{{ form.category.id_for_label }}">
+                            Category <span class="required">*</span>
+                        </label>
+
+                        {{ form.category }}
+
+                        {% for error in form.category.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Publisher -->
+                    <div class="form-group">
+
+                        <label for="{{ form.publisher.id_for_label }}">
+                            Publisher
+                        </label>
+
+                        {{ form.publisher }}
+
+                        {% for error in form.publisher.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Publication Year -->
+                    <div class="form-group">
+
+                        <label for="{{ form.publication_year.id_for_label }}">
+                            Publication Year
+                        </label>
+
+                        {{ form.publication_year }}
+
+                        {% for error in form.publication_year.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Language -->
+                    <div class="form-group">
+
+                        <label for="{{ form.language.id_for_label }}">
+                            Language
+                        </label>
+
+                        {{ form.language }}
+
+                        {% for error in form.language.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Edition -->
+                    <div class="form-group">
+
+                        <label for="{{ form.edition.id_for_label }}">
+                            Edition
+                        </label>
+
+                        {{ form.edition }}
+
+                        {% for error in form.edition.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Description -->
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    📝 Book Description
+                </div>
+
+                <div class="form-group">
+
+                    <label for="{{ form.description.id_for_label }}">
+                        Description
+                    </label>
+
+                    {{ form.description }}
+
+                    <div class="help-text">
+                        Add a short description or summary of the book.
+                    </div>
+
+                    {% for error in form.description.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Library Location -->
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    📍 Library Location & Inventory
+                </div>
+
+                <div class="form-grid">
+
+                    <!-- Shelf -->
+                    <div class="form-group">
+
+                        <label for="{{ form.shelf_number.id_for_label }}">
+                            Shelf Number
+                        </label>
+
+                        {{ form.shelf_number }}
+
+                        {% for error in form.shelf_number.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Rack -->
+                    <div class="form-group">
+
+                        <label for="{{ form.rack_number.id_for_label }}">
+                            Rack Number
+                        </label>
+
+                        {{ form.rack_number }}
+
+                        {% for error in form.rack_number.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Quantity -->
+                    <div class="form-group">
+
+                        <label for="{{ form.quantity.id_for_label }}">
+                            Quantity <span class="required">*</span>
+                        </label>
+
+                        {{ form.quantity }}
+
+                        {% for error in form.quantity.errors %}
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Cover Image -->
+            <div class="form-section">
+
+                <div class="form-section-title">
+                    🖼️ Book Cover
+                </div>
+
+                <div class="image-upload-box">
+
+                    <div class="upload-icon">
+                        📕
+                    </div>
+
+                    <div class="upload-title">
+                        Upload Book Cover
+                    </div>
+
+                    <div class="upload-description">
+                        JPG, PNG or WEBP — Maximum 5 MB
+                    </div>
+
+                    {{ form.cover_image }}
+
+                    {% for error in form.cover_image.errors %}
+                        <div class="field-error">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+
+                    <!-- Existing Image -->
+                    {% if book and book.cover_image %}
+
+                        <div class="current-image">
+
+                            <p>Current Cover</p>
+
+                            <img
+                                src="{{ book.cover_image.url }}"
+                                alt="{{ book.title }}"
+                            >
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- New Image Preview -->
+                    <div
+                        class="image-preview"
+                        id="imagePreview"
+                    >
+
+                        <p>New Cover Preview</p>
+
+                        <img
+                            id="previewImage"
+                            src=""
+                            alt="Book cover preview"
+                        >
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="form-actions">
+
+                <a
+                    href="{% url 'book_list' %}"
+                    class="btn btn-secondary"
+                >
+                    ← Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+
+                    {% if book %}
+                        💾 Update Book
+                    {% else %}
+                        ➕ Add Book
+                    {% endif %}
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+    const imageInput = document.getElementById(
+        "{{ form.cover_image.id_for_label }}"
+    );
+
+    const imagePreview = document.getElementById(
+        "imagePreview"
+    );
+
+    const previewImage = document.getElementById(
+        "previewImage"
+    );
+
+
+    if (imageInput) {
+
+        imageInput.addEventListener(
+            "change",
+            function () {
+
+                const file = this.files[0];
+
+                if (!file) {
+                    imagePreview.style.display = "none";
+                    previewImage.src = "";
+                    return;
+                }
+
+
+                if (!file.type.startsWith("image/")) {
+                    alert(
+                        "Please select a valid image file."
+                    );
+
+                    this.value = "";
+                    imagePreview.style.display = "none";
+
+                    return;
+                }
+
+
+                if (file.size > 5 * 1024 * 1024) {
+
+                    alert(
+                        "Image size must be less than 5 MB."
+                    );
+
+                    this.value = "";
+                    imagePreview.style.display = "none";
+
+                    return;
+                }
+
+
+                const reader = new FileReader();
+
+
+                reader.onload = function (event) {
+
+                    previewImage.src =
+                        event.target.result;
+
+                    imagePreview.style.display =
+                        "block";
+
+                };
+
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,1227 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly Report{% endblock %}
+
+{% block content %}
+
+<style>
+    .monthly-wrapper {
+        padding: 24px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 70px);
+    }
+
+    .monthly-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .monthly-title h2 {
+        margin: 0;
+        font-weight: 750;
+        color: #172033;
+    }
+
+    .monthly-title p {
+        margin: 6px 0 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .filter-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #172033;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .filter-group input {
+        min-width: 230px;
+        height: 42px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #172033;
+        margin: 0 0 15px;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .summary-card {
+        position: relative;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        min-height: 120px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .summary-card::after {
+        content: "";
+        position: absolute;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        right: -25px;
+        top: -25px;
+        background: rgba(13, 110, 253, 0.06);
+    }
+
+    .summary-label {
+        color: #6c757d;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 9px;
+    }
+
+    .summary-value {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 750;
+        color: #172033;
+    }
+
+    .summary-subtitle {
+        margin-top: 6px;
+        color: #8a94a6;
+        font-size: 12px;
+    }
+
+    /* CHARTS */
+
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .chart-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .chart-card h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        color: #172033;
+    }
+
+    .chart-card p {
+        margin: 5px 0 15px;
+        color: #8a94a6;
+        font-size: 12px;
+    }
+
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 260px;
+    }
+
+    .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* TABLE */
+
+    .table-card {
+        background: #ffffff;
+        border: 1px solid #e8ebf0;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+        margin-bottom: 24px;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .table-header h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #172033;
+    }
+
+    .record-count {
+        font-size: 12px;
+        color: #6c757d;
+        background: #f1f3f5;
+        padding: 6px 10px;
+        border-radius: 20px;
+    }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    .report-table th {
+        background: #f8f9fb;
+        color: #495057;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #edf0f3;
+        vertical-align: middle;
+    }
+
+    .report-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .report-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .student-name {
+        font-weight: 650;
+        color: #172033;
+    }
+
+    .book-name {
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .muted-text {
+        color: #8a94a6;
+    }
+
+    /* STATUS */
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 11px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-issued {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-returned {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-late {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .fine-value {
+        font-weight: 700;
+        color: #dc3545;
+    }
+
+    .no-fine {
+        color: #8a94a6;
+    }
+
+    /* EMPTY */
+
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+        color: #6c757d;
+    }
+
+    .empty-icon {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 15px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f3f5;
+        font-size: 28px;
+    }
+
+    .empty-state h5 {
+        color: #343a40;
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        margin-bottom: 0;
+    }
+
+    /* ACTIONS */
+
+    .report-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 18px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1100px) {
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 650px) {
+
+        .monthly-wrapper {
+            padding: 15px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-group input {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .header-actions .btn {
+            flex: 1;
+        }
+
+        .chart-container {
+            height: 230px;
+        }
+    }
+
+    @media print {
+
+        .filter-card,
+        .header-actions,
+        .report-actions,
+        nav,
+        aside {
+            display: none !important;
+        }
+
+        .monthly-wrapper {
+            background: #ffffff;
+            padding: 0;
+        }
+
+        .summary-card,
+        .chart-card,
+        .table-card {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+
+
+<div class="monthly-wrapper">
+
+    <!-- HEADER -->
+
+    <div class="monthly-header">
+
+        <div class="monthly-title">
+
+            <h2>
+                Monthly Report
+            </h2>
+
+            <p>
+                Monthly library circulation, returns and fine analysis
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <a
+                href="{% url 'reports' %}"
+                class="btn btn-secondary"
+            >
+                ← Back to Reports
+            </a>
+
+            <button
+                type="button"
+                onclick="window.print()"
+                class="btn btn-outline-dark"
+            >
+                🖨 Print
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-card">
+
+        <div class="filter-title">
+            📅 Select Report Period
+        </div>
+
+
+        <form
+            method="get"
+            class="filter-form"
+        >
+
+            <div class="filter-group">
+
+                <label for="month">
+                    Month
+                </label>
+
+                <input
+                    type="month"
+                    id="month"
+                    name="month"
+                    value="{{ selected_month }}"
+                    class="form-control"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Generate Report
+            </button>
+
+
+            {% if selected_month %}
+
+            <a
+                href="{% url 'monthly_report' %}"
+                class="btn btn-outline-secondary"
+            >
+                Clear
+            </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <!-- CIRCULATION SUMMARY -->
+
+    <h4 class="section-title">
+        Circulation Summary
+    </h4>
+
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Total Issues
+            </div>
+
+            <p class="summary-value">
+                {{ total_issues }}
+            </p>
+
+            <div class="summary-subtitle">
+                Books issued during period
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Returned Books
+            </div>
+
+            <p class="summary-value">
+                {{ returned_books }}
+            </p>
+
+            <div class="summary-subtitle">
+                Successfully returned
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Active Issues
+            </div>
+
+            <p class="summary-value">
+                {{ active_issues }}
+            </p>
+
+            <div class="summary-subtitle">
+                Currently not returned
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Late Books
+            </div>
+
+            <p class="summary-value">
+                {{ late_books }}
+            </p>
+
+            <div class="summary-subtitle">
+                Past their due date
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FINE SUMMARY -->
+
+    <h4 class="section-title">
+        Fine Summary
+    </h4>
+
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Total Fine
+            </div>
+
+            <p class="summary-value">
+                ₹{{ total_fine }}
+            </p>
+
+            <div class="summary-subtitle">
+                Total fine recorded
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Fine Collected
+            </div>
+
+            <p class="summary-value">
+                ₹{{ total_collected }}
+            </p>
+
+            <div class="summary-subtitle">
+                Amount received
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Outstanding Fine
+            </div>
+
+            <p class="summary-value">
+                ₹{{ total_outstanding }}
+            </p>
+
+            <div class="summary-subtitle">
+                Amount pending
+            </div>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Report Period
+            </div>
+
+            <p
+                class="summary-value"
+                style="font-size: 19px;"
+            >
+
+                {% if selected_month %}
+                    {{ selected_month }}
+                {% else %}
+                    All Time
+                {% endif %}
+
+            </p>
+
+            <div class="summary-subtitle">
+                Selected reporting period
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MONTHLY ANALYTICS -->
+
+    <h4 class="section-title">
+        Monthly Analytics
+    </h4>
+
+
+    <div class="charts-grid">
+
+
+        <!-- ISSUES -->
+
+        <div class="chart-card">
+
+            <h5>
+                Issues
+            </h5>
+
+            <p>
+                Books issued during the selected period
+            </p>
+
+            <div class="chart-container">
+
+                <canvas id="monthlyIssuesChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- RETURNS -->
+
+        <div class="chart-card">
+
+            <h5>
+                Returns
+            </h5>
+
+            <p>
+                Books returned during the selected period
+            </p>
+
+            <div class="chart-container">
+
+                <canvas id="monthlyReturnsChart"></canvas>
+
+            </div>
+
+        </div>
+
+
+        <!-- FINE -->
+
+        <div class="chart-card">
+
+            <h5>
+                Fine Analysis
+            </h5>
+
+            <p>
+                Fine amount recorded for the period
+            </p>
+
+            <div class="chart-container">
+
+                <canvas id="monthlyFineChart"></canvas>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ISSUE DETAILS -->
+
+    <div class="table-card">
+
+        <div class="table-header">
+
+            <h5>
+                Issue Details
+            </h5>
+
+
+            {% if issues %}
+
+            <span class="record-count">
+
+                {{ issues|length }}
+                record{{ issues|length|pluralize }}
+
+            </span>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if issues %}
+
+        <div class="table-responsive">
+
+            <table class="report-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Roll No.</th>
+                        <th>Book</th>
+                        <th>Issue Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Fine</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for issue in issues %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="student-name">
+                                {{ issue.student.name }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ issue.student.roll_no }}
+                        </td>
+
+
+                        <td>
+
+                            <span class="book-name">
+                                {{ issue.book.title }}
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            {{ issue.issue_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.due_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.return_date %}
+
+                                {{ issue.return_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                <span class="muted-text">
+                                    —
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.returned %}
+
+                                <span class="status-badge status-returned">
+                                    ✓ Returned
+                                </span>
+
+                            {% elif issue.late_days > 0 %}
+
+                                <span class="status-badge status-late">
+                                    ⚠ Late
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-issued">
+                                    ● Issued
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.fine and issue.fine > 0 %}
+
+                                <span class="fine-value">
+                                    ₹{{ issue.fine }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="no-fine">
+                                    ₹0
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                📚
+            </div>
+
+            <h5>
+                No Issue Records Found
+            </h5>
+
+            <p>
+                There are no library issue records
+                for the selected reporting period.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- EXPORT -->
+
+        <div class="report-actions">
+
+            <a
+                href="{% url 'export_csv' %}?type=issues"
+                class="btn btn-outline-primary"
+            >
+                ⬇ Export CSV
+            </a>
+
+
+            <a
+                href="{% url 'export_pdf' %}?type=issues"
+                class="btn btn-outline-danger"
+            >
+                📄 Export PDF
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CHART.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+
+<script>
+
+    /*
+    ==========================================================
+    MONTHLY REPORT DATA
+    ==========================================================
+    */
+
+    const monthlyIssueLabels =
+        {{ monthly_issue_labels|safe }};
+
+    const monthlyIssueData =
+        {{ monthly_issue_data|safe }};
+
+    const monthlyReturnLabels =
+        {{ monthly_issue_labels|safe }};
+
+    const monthlyReturnData =
+        {{ monthly_return_data|safe }};
+
+    const monthlyFineLabels =
+        {{ monthly_fine_labels|safe }};
+
+    const monthlyFineData =
+        {{ monthly_fine_data|safe }};
+
+
+    /*
+    ==========================================================
+    COMMON OPTIONS
+    ==========================================================
+    */
+
+    const commonOptions = {
+
+        responsive: true,
+
+        maintainAspectRatio: false,
+
+        plugins: {
+
+            legend: {
+                display: false
+            }
+
+        },
+
+        scales: {
+
+            y: {
+
+                beginAtZero: true,
+
+                ticks: {
+                    precision: 0
+                }
+
+            }
+
+        }
+
+    };
+
+
+    /*
+    ==========================================================
+    ISSUES CHART
+    ==========================================================
+    */
+
+    const issuesCanvas =
+        document.getElementById("monthlyIssuesChart");
+
+
+    if (issuesCanvas) {
+
+        new Chart(
+
+            issuesCanvas,
+
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: monthlyIssueLabels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Issues",
+
+                            data: monthlyIssueData,
+
+                            borderWidth: 1
+
+                        }
+
+                    ]
+
+                },
+
+                options: commonOptions
+
+            }
+
+        );
+
+    }
+
+
+    /*
+    ==========================================================
+    RETURNS CHART
+    ==========================================================
+    */
+
+    const returnsCanvas =
+        document.getElementById("monthlyReturnsChart");
+
+
+    if (returnsCanvas) {
+
+        new Chart(
+
+            returnsCanvas,
+
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: monthlyReturnLabels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Returns",
+
+                            data: monthlyReturnData,
+
+                            borderWidth: 3,
+
+                            tension: 0.35,
+
+                            fill: false,
+
+                            pointRadius: 4
+
+                        }
+
+                    ]
+
+                },
+
+                options: commonOptions
+
+            }
+
+        );
+
+    }
+
+
+    /*
+    ==========================================================
+    FINE CHART
+    ==========================================================
+    */
+
+    const fineCanvas =
+        document.getElementById("monthlyFineChart");
+
+
+    if (fineCanvas) {
+
+        new Chart(
+
+            fineCanvas,
+
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: monthlyFineLabels,
+
+                    datasets: [
+
+                        {
+
+                            label: "Fine",
+
+                            data: monthlyFineData,
+
+                            borderWidth: 3,
+
+                            tension: 0.35,
+
+                            fill: false,
+
+                            pointRadius: 4
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+
+                                callback: function(value) {
+
+                                    return "₹" + value;
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+    }
+
+</script>
+
+{% endblock %}

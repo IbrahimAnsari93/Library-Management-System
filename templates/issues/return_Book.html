@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Book</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 70px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        .book-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .book-info p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .book-info strong {
+            color: #333;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 22px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .btn-return {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-return:hover {
+            background: #218838;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 94%;
+                margin: 30px auto;
+            }
+
+            .card {
+                padding: 25px 18px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="icon">↩️</div>
+
+        <h1>Return Book</h1>
+
+        <div class="book-info">
+
+            <p>
+                <strong>Student:</strong>
+                {{ issue.student.name }}
+            </p>
+
+            <p>
+                <strong>Book:</strong>
+                {{ issue.book.title }}
+            </p>
+
+            <p>
+                <strong>Issue Date:</strong>
+                {{ issue.issue_date }}
+            </p>
+
+            <p>
+                <strong>Due Date:</strong>
+                {{ issue.due_date }}
+            </p>
+
+            <p>
+                <strong>Late Days:</strong>
+                {{ issue.late_days }}
+            </p>
+
+            <p>
+                <strong>Current Fine:</strong>
+                ₹{{ issue.current_fine }}
+            </p>
+
+        </div>
+
+        <div class="warning">
+            ⚠️ Are you sure you want to return this book?
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="buttons">
+
+                <button type="submit" class="btn btn-return">
+                    ↩️ Yes, Return Book
+                </button>
+
+                <a href="{% url 'issue_list' %}" class="btn btn-cancel">
+                    ❌ Cancel
+                </a>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

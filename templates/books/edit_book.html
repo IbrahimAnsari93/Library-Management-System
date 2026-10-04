@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Book - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 12px;
+            background: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #d97706;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                width: 100%;
+                margin: 30px auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>✏️ Edit Book</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <label for="title">
+            📖 Title
+        </label>
+
+        <input
+            type="text"
+            id="title"
+            name="title"
+            value="{{ book.title }}"
+            required
+        >
+
+        <label for="author">
+            ✍️ Author
+        </label>
+
+        <input
+            type="text"
+            id="author"
+            name="author"
+            value="{{ book.author }}"
+            required
+        >
+
+        <label for="isbn">
+            🔢 ISBN
+        </label>
+
+        <input
+            type="text"
+            id="isbn"
+            name="isbn"
+            value="{{ book.isbn }}"
+            required
+        >
+
+        <label for="category">
+            🏷️ Category
+        </label>
+
+        <input
+            type="text"
+            id="category"
+            name="category"
+            value="{{ book.category }}"
+            required
+        >
+
+        <label for="quantity">
+            📦 Quantity
+        </label>
+
+        <input
+            type="number"
+            id="quantity"
+            name="quantity"
+            value="{{ book.quantity }}"
+            min="1"
+            required
+        >
+
+        <button type="submit">
+            💾 Update Book
+        </button>
+
+    </form>
+
+    <a
+        href="{% url 'book_list' %}"
+        class="back"
+    >
+        ← Back to Books
+    </a>
+
+</div>
+
+</body>
+
+</html>

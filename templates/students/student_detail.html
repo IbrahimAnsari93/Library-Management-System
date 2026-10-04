@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Detail - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .header {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+            color: #222;
+            font-size: 30px;
+        }
+
+        .header p {
+            margin: 0;
+            color: #666;
+            font-size: 15px;
+        }
+
+        .student-profile {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+        }
+
+        .profile-name h2 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            color: #222;
+        }
+
+        .profile-name p {
+            margin: 0;
+            color: #777;
+        }
+
+        .profile-details {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .detail-box {
+            background: #f8f9fa;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #e5e5e5;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #777;
+            margin-bottom: 7px;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #222;
+            word-break: break-word;
+        }
+
+        .issue-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .issue-button:hover {
+            background: #0056b3;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .stat-title {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 27px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .history-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        .history-section h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th {
+            background: #343a40;
+            color: white;
+            padding: 14px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e5e5e5;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-issued {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-returned {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-overdue {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .fine {
+            font-weight: bold;
+        }
+
+        .fine-danger {
+            color: #dc3545;
+        }
+
+        .fine-success {
+            color: #198754;
+        }
+
+        .no-history {
+            text-align: center;
+            padding: 45px 20px;
+            color: #777;
+        }
+
+        .no-history-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #545b62;
+        }
+
+        .dashboard-button {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .dashboard-button:hover {
+            background: #146c43;
+        }
+
+        .warning-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            color: #664d03;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .profile-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .container {
+                width: 95%;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .profile-top {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 450px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .back-button,
+            .dashboard-button {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>👨‍🎓 Student Details</h1>
+
+        <p>
+            Complete student profile and library issue history
+        </p>
+
+    </div>
+
+
+    <!-- STUDENT PROFILE -->
+
+    <div class="student-profile">
+
+        <div class="profile-top">
+
+            <div class="profile-icon">
+                👨‍🎓
+            </div>
+
+            <div class="profile-name">
+
+                <h2>
+                    {{ student.name }}
+                </h2>
+
+                <p>
+                    Student ID: {{ student.id }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-details">
+
+            <div class="detail-box">
+
+                <div class="detail-label">
+                    Roll Number
+                </div>
+
+                <div class="detail-value">
+                    {{ student.roll_no }}
+                </div>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <div class="detail-label">
+                    Email
+                </div>
+
+                <div class="detail-value">
+                    {{ student.email }}
+                </div>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <div class="detail-label">
+                    Phone
+                </div>
+
+                <div class="detail-value">
+                    {{ student.phone }}
+                </div>
+
+            </div>
+
+
+            <div class="detail-box">
+
+                <div class="detail-label">
+                    Login Username
+                </div>
+
+                <div class="detail-value">
+                    {{ student.email }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <a
+            href="{% url 'issue_book' %}?student={{ student.id }}"
+            class="issue-button"
+        >
+            📕 Issue Book to {{ student.name }}
+        </a>
+
+    </div>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📚
+            </div>
+
+            <div class="stat-title">
+                Total Issues
+            </div>
+
+            <div class="stat-number">
+                {{ total_issues }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                📕
+            </div>
+
+            <div class="stat-title">
+                Currently Issued
+            </div>
+
+            <div class="stat-number">
+                {{ currently_issued }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ✅
+            </div>
+
+            <div class="stat-title">
+                Returned Books
+            </div>
+
+            <div class="stat-number">
+                {{ returned_books }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                ⚠️
+            </div>
+
+            <div class="stat-title">
+                Overdue
+            </div>
+
+            <div class="stat-number">
+                {{ overdue_books }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <div class="stat-icon">
+                💰
+            </div>
+
+            <div class="stat-title">
+                Total Fine
+            </div>
+
+            <div class="stat-number">
+                ₹{{ total_fine }}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ISSUE HISTORY -->
+
+    <div class="history-section">
+
+        <h2>
+            📋 Issue History
+        </h2>
+
+
+        {% if issues %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Book
+                        </th>
+
+                        <th>
+                            Author
+                        </th>
+
+                        <th>
+                            Issue Date
+                        </th>
+
+                        <th>
+                            Due Date
+                        </th>
+
+                        <th>
+                            Return Date
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Late Days
+                        </th>
+
+                        <th>
+                            Fine
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for issue in issues %}
+
+                    <tr>
+
+                        <td>
+                            📚 {{ issue.book.title }}
+                        </td>
+
+                        <td>
+                            {{ issue.book.author }}
+                        </td>
+
+                        <td>
+                            {{ issue.issue_date|date:"d M Y" }}
+                        </td>
+
+                        <td>
+                            {{ issue.due_date|date:"d M Y" }}
+                        </td>
+
+                        <td>
+
+                            {% if issue.return_date %}
+
+                                {{ issue.return_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                Not Returned
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if not issue.returned and issue.due_date < today %}
+
+                                <span class="status status-overdue">
+                                    ⚠️ Overdue
+                                </span>
+
+                            {% elif issue.returned %}
+
+                                <span class="status status-returned">
+                                    ✅ Returned
+                                </span>
+
+                            {% else %}
+
+                                <span class="status status-issued">
+                                    📕 Issued
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.returned and issue.return_date > issue.due_date %}
+
+                                {{ issue.return_date|timesince:issue.due_date }}
+
+                            {% elif not issue.returned and issue.due_date < today %}
+
+                                {{ today|timesince:issue.due_date }}
+
+                            {% else %}
+
+                                0
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.fine and issue.fine > 0 %}
+
+                                <span class="fine fine-danger">
+                                    ₹{{ issue.fine }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="fine fine-success">
+                                    ₹0
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="no-history">
+
+            <div class="no-history-icon">
+                📚
+            </div>
+
+            <h3>
+                No issue history found for this student.
+            </h3>
+
+            <p>
+                No books have been issued to {{ student.name }} yet.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- WARNING -->
+
+    {% if overdue_books > 0 %}
+
+    <div class="warning-box">
+
+        ⚠️
+        <strong>
+            Attention:
+        </strong>
+
+        This student has
+        <strong>
+            {{ overdue_books }}
+        </strong>
+        overdue book(s).
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- ACTION BUTTONS -->
+
+    <div class="actions">
+
+        <a
+            href="{% url 'student_list' %}"
+            class="back-button"
+        >
+            ← Back to Students
+        </a>
+
+
+        <a
+            href="{% url 'dashboard' %}"
+            class="dashboard-button"
+        >
+            🏠 Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delete Book | Library Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f9;
+            color: #17202a;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #073b3a;
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .brand h2 {
+            font-size: 17px;
+            line-height: 1.2;
+        }
+
+        .brand p {
+            font-size: 11px;
+            color: #a7c9c6;
+            margin-top: 4px;
+        }
+
+        .menu-title {
+            color: #88aaa7;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 28px 12px 10px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d8e7e5;
+            text-decoration: none;
+            padding: 12px 13px;
+            margin: 4px 0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #0f766e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 20px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Main */
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .delete-card {
+            width: 100%;
+            max-width: 560px;
+            background: white;
+            border: 1px solid #e3ebea;
+            border-radius: 18px;
+            padding: 38px;
+            box-shadow: 0 12px 35px rgba(7,59,58,0.08);
+            text-align: center;
+        }
+
+        .warning-icon {
+            width: 76px;
+            height: 76px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #fff1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .delete-card h1 {
+            color: #263b3a;
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #72817f;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .book-info {
+            background: #f7faf9;
+            border: 1px solid #e4eceb;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .book-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #073b3a;
+            margin-bottom: 8px;
+        }
+
+        .book-detail {
+            color: #637370;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .warning {
+            background: #fff8e8;
+            border: 1px solid #f4dfaa;
+            color: #856404;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn {
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 12px 22px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-cancel {
+            background: #eef2f2;
+            color: #405352;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e9e8;
+        }
+
+        .btn-delete {
+            background: #c03939;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #a93232;
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .brand h2,
+            .brand p,
+            .menu-title,
+            .nav-link span {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 5px 0 20px;
+            }
+
+            .nav-link {
+                justify-content: center;
+            }
+
+            .logout {
+                left: 8px;
+                right: 8px;
+            }
+
+            .main {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: 18px;
+            }
+
+            .delete-card {
+                padding: 28px 20px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                📚
+            </div>
+
+            <div>
+                <h2>Library System</h2>
+                <p>Management Portal</p>
+            </div>
+
+        </div>
+
+        <div class="menu-title">
+            Main Menu
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="nav-link">
+            <span>📊</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'book_list' %}" class="nav-link active">
+            <span>📖</span>
+            <span>Books</span>
+        </a>
+
+        <a href="{% url 'issue_list' %}" class="nav-link">
+            <span>🔄</span>
+            <span>Issue / Return</span>
+        </a>
+
+        <a href="{% url 'student_list' %}" class="nav-link">
+            <span>👥</span>
+            <span>Students</span>
+        </a>
+
+        <a href="{% url 'fine_management' %}" class="nav-link">
+            <span>💰</span>
+            <span>Fine Management</span>
+        </a>
+
+        <a href="{% url 'reports' %}" class="nav-link">
+            <span>📈</span>
+            <span>Reports</span>
+        </a>
+
+        <div class="menu-title">
+            System
+        </div>
+
+        <a href="/admin/" class="nav-link">
+            <span>⚙️</span>
+            <span>Admin Panel</span>
+        </a>
+
+        <a href="{% url 'logout' %}" class="nav-link logout">
+            <span>🚪</span>
+            <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- Main -->
+    <main class="main">
+
+        <div class="delete-card">
+
+            <div class="warning-icon">
+                ⚠️
+            </div>
+
+            <h1>Delete Book?</h1>
+
+            <p class="subtitle">
+                Are you sure you want to permanently delete this book?
+                This action cannot be undone.
+            </p>
+
+
+            <div class="book-info">
+
+                <div class="book-title">
+                    📖 {{ book.title }}
+                </div>
+
+                <div class="book-detail">
+                    <strong>Author:</strong>
+                    {{ book.author }}
+                </div>
+
+                <div class="book-detail">
+                    <strong>ISBN:</strong>
+                    {{ book.isbn }}
+                </div>
+
+                <div class="book-detail">
+                    <strong>Category:</strong>
+                    {{ book.category }}
+                </div>
+
+                <div class="book-detail">
+                    <strong>Quantity:</strong>
+                    {{ book.quantity }}
+                </div>
+
+            </div>
+
+
+            <div class="warning">
+                ⚠️ Please make sure this is the book you want to delete.
+                Deleted book records cannot be recovered from this page.
+            </div>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="actions">
+
+                    <a
+                        href="{% url 'book_list' %}"
+                        class="btn btn-cancel"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-delete"
+                    >
+                        Yes, Delete Book
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

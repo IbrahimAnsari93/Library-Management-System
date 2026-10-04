@@ -1,0 +1,415 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Issue Book | Library Management</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px 60px;
+        }
+
+        .header {
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5eaf0;
+            border-radius: 18px;
+            padding: 30px;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #edf1f5;
+            margin-bottom: 25px;
+        }
+
+        .card-title i {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        label span {
+            color: #dc2626;
+        }
+
+        select,
+        input[type="date"] {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #d8e0e9;
+            border-radius: 10px;
+            padding: 0 14px;
+            background: white;
+            color: #172033;
+            font-size: 14px;
+            outline: none;
+        }
+
+        select:focus,
+        input[type="date"]:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, .10);
+        }
+
+        .help {
+            margin-top: 7px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .info-box i {
+            margin-top: 2px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            border: none;
+            text-decoration: none;
+            border-radius: 10px;
+            padding: 13px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #374151;
+            border: 1px solid #dbe2ea;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        @media (max-width: 600px) {
+
+            .page {
+                padding: 25px 12px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="header">
+
+        <h1>Issue Book</h1>
+
+        <p>
+            Issue a library book to a registered student.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-title">
+
+            <i class="fa-solid fa-book-open"></i>
+
+            <div>
+                <h2>Issue Transaction</h2>
+            </div>
+
+        </div>
+
+
+        <div class="info-box">
+
+            <i class="fa-solid fa-circle-info"></i>
+
+            <div>
+                Select a student, choose an available book,
+                and set the expected return date.
+                A student cannot have the same book issued twice
+                at the same time.
+            </div>
+
+        </div>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+
+            <!-- STUDENT -->
+
+            <div class="form-group">
+
+                <label for="student">
+                    Student <span>*</span>
+                </label>
+
+                <select
+                    name="student"
+                    id="student"
+                    required
+                >
+
+                    <option value="">
+                        Select Student
+                    </option>
+
+                    {% for student in students %}
+
+                        <option
+                            value="{{ student.id }}"
+                            {% if selected_student|stringformat:"s" == student.id|stringformat:"s" %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ student.name }}
+                            — {{ student.roll_no }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <div class="help">
+                    Select the student who will receive the book.
+                </div>
+
+            </div>
+
+
+            <!-- BOOK -->
+
+            <div class="form-group">
+
+                <label for="book">
+                    Book <span>*</span>
+                </label>
+
+                <select
+                    name="book"
+                    id="book"
+                    required
+                >
+
+                    <option value="">
+                        Select Book
+                    </option>
+
+                    {% for book in books %}
+
+                        {% if book.available_quantity > 0 %}
+
+                            <option
+                                value="{{ book.id }}"
+                                {% if selected_book|stringformat:"s" == book.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ book.title }}
+                                — {{ book.author }}
+                                — Available: {{ book.available_quantity }}
+                            </option>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </select>
+
+                <div class="help">
+                    Only books with available copies can be issued.
+                </div>
+
+            </div>
+
+
+            <!-- DUE DATE -->
+
+            <div class="form-group">
+
+                <label for="due_date">
+                    Due Date <span>*</span>
+                </label>
+
+                <input
+                    type="date"
+                    name="due_date"
+                    id="due_date"
+                    value="{{ selected_due_date }}"
+                    required
+                >
+
+                <div class="help">
+                    The book should be returned on or before this date.
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <a
+                    href="{% url 'issue_list' %}"
+                    class="btn btn-secondary"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Issue Book
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const dueDate = document.getElementById("due_date");
+
+    const today = new Date();
+
+    const year = today.getFullYear();
+
+    const month = String(
+        today.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        today.getDate()
+    ).padStart(2, "0");
+
+    const todayString =
+        `${year}-${month}-${day}`;
+
+    dueDate.min = todayString;
+
+</script>
+
+</body>
+
+</html>

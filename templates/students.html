@@ -1,0 +1,720 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students | Library Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f9;
+            color: #17202a;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: #073b3a;
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px 28px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: #0f766e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .brand h2 {
+            font-size: 17px;
+            line-height: 1.2;
+        }
+
+        .brand p {
+            font-size: 11px;
+            color: #a7c9c6;
+            margin-top: 4px;
+        }
+
+        .menu-title {
+            color: #88aaa7;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin: 28px 12px 10px;
+            text-transform: uppercase;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d8e7e5;
+            text-decoration: none;
+            padding: 12px 13px;
+            margin: 4px 0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: #0f766e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 20px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* Main */
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+            color: #102a2a;
+        }
+
+        .topbar p {
+            margin-top: 6px;
+            color: #6b7c7b;
+            font-size: 14px;
+        }
+
+        .user-box {
+            background: white;
+            border: 1px solid #e4eceb;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #45605e;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e6eeee;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 18px rgba(7,59,58,0.04);
+        }
+
+        .stat-label {
+            color: #718280;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #073b3a;
+        }
+
+        /* Content */
+        .content-card {
+            background: white;
+            border: 1px solid #e3ebea;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(7,59,58,0.05);
+        }
+
+        .card-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #e9eeee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            color: #173333;
+        }
+
+        .card-header p {
+            font-size: 12px;
+            color: #7a8988;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 230px;
+            padding: 10px 13px;
+            border: 1px solid #d8e4e2;
+            border-radius: 9px;
+            outline: none;
+            font-size: 13px;
+        }
+
+        .search-box input:focus {
+            border-color: #0f766e;
+            box-shadow: 0 0 0 3px rgba(15,118,110,0.08);
+        }
+
+        .btn {
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            border-radius: 9px;
+            padding: 10px 15px;
+            font-size: 13px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #0f766e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0b625c;
+        }
+
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7faf9;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 18px;
+            color: #647573;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 18px;
+            border-top: 1px solid #edf1f1;
+            font-size: 13px;
+            color: #344746;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fbfdfd;
+        }
+
+        .serial {
+            width: 55px;
+            font-weight: bold;
+            color: #0f766e;
+        }
+
+        .student-name {
+            font-weight: bold;
+            color: #183636;
+        }
+
+        .roll {
+            display: inline-block;
+            background: #eef7f5;
+            color: #0f766e;
+            padding: 5px 9px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .email {
+            color: #526866;
+        }
+
+        .phone {
+            color: #526866;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: #e8f7ee;
+            color: #187a45;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 7px;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            padding: 7px 10px;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .view {
+            background: #eef5ff;
+            color: #2864a8;
+        }
+
+        .edit {
+            background: #fff5df;
+            color: #9a6800;
+        }
+
+        .delete {
+            background: #fff0f0;
+            color: #bd3d3d;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 55px 20px;
+            color: #7a8988;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .empty h3 {
+            color: #344746;
+            margin-bottom: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .search-box {
+                flex: 1;
+            }
+
+            .search-box input {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .brand h2,
+            .brand p,
+            .menu-title,
+            .nav-link span {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+                padding: 5px 0 20px;
+            }
+
+            .nav-link {
+                justify-content: center;
+            }
+
+            .logout {
+                left: 8px;
+                right: 8px;
+            }
+
+            .main {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: 18px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                gap: 10px;
+                flex-direction: column;
+            }
+
+            .topbar h1 {
+                font-size: 23px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-primary {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">📚</div>
+
+            <div>
+                <h2>Library System</h2>
+                <p>Management Portal</p>
+            </div>
+        </div>
+
+        <div class="menu-title">Main Menu</div>
+
+        <a href="{% url 'dashboard' %}" class="nav-link">
+            <span>📊</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="{% url 'book_list' %}" class="nav-link">
+            <span>📖</span>
+            <span>Books</span>
+        </a>
+
+        <a href="{% url 'issue_list' %}" class="nav-link">
+            <span>🔄</span>
+            <span>Issue / Return</span>
+        </a>
+
+        <a href="{% url 'student_list' %}" class="nav-link active">
+            <span>👥</span>
+            <span>Students</span>
+        </a>
+
+        <a href="{% url 'fine_management' %}" class="nav-link">
+            <span>💰</span>
+            <span>Fine Management</span>
+        </a>
+
+        <a href="{% url 'reports' %}" class="nav-link">
+            <span>📈</span>
+            <span>Reports</span>
+        </a>
+
+        <div class="menu-title">System</div>
+
+        <a href="/admin/" class="nav-link">
+            <span>⚙️</span>
+            <span>Admin Panel</span>
+        </a>
+
+        <a href="{% url 'logout' %}" class="nav-link logout">
+            <span>🚪</span>
+            <span>Logout</span>
+        </a>
+
+    </aside>
+
+
+    <!-- Main -->
+    <main class="main">
+
+        <div class="topbar">
+
+            <div>
+                <h1>Students</h1>
+                <p>Manage registered library students and their accounts.</p>
+            </div>
+
+            <div class="user-box">
+                👤 {{ request.user.username }}
+            </div>
+
+        </div>
+
+
+        <!-- Statistics -->
+        <div class="stats">
+
+            <div class="stat-card">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-number" id="totalStudents">
+                    {{ students|length }}
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Displayed Students</div>
+                <div class="stat-number" id="displayedStudents">
+                    {{ students|length }}
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Student Login</div>
+                <div class="stat-number">Active</div>
+            </div>
+
+        </div>
+
+
+        <!-- Students Card -->
+        <section class="content-card">
+
+            <div class="card-header">
+
+                <div>
+                    <h2>Student Directory</h2>
+                    <p>View, edit and manage all registered students.</p>
+                </div>
+
+                <div class="header-actions">
+
+                    <div class="search-box">
+                        <input
+                            type="text"
+                            id="studentSearch"
+                            placeholder="Search student..."
+                            autocomplete="off"
+                        >
+                    </div>
+
+                    <a href="{% url 'student_add' %}" class="btn btn-primary">
+                        + Add Student
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Student</th>
+                            <th>Roll No.</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="studentTable">
+
+                        {% for student in students %}
+
+                        <tr class="student-row">
+
+                            <!-- Display number starts from 1 -->
+                            <td class="serial">
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                <div class="student-name">
+                                    {{ student.name }}
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="roll">
+                                    {{ student.roll_no }}
+                                </span>
+                            </td>
+
+                            <td class="email">
+                                {{ student.email }}
+                            </td>
+
+                            <td class="phone">
+                                {{ student.phone }}
+                            </td>
+
+                            <td>
+                                <span class="status">
+                                    Active
+                                </span>
+                            </td>
+
+                            <td>
+
+                                <div class="actions">
+
+                                    <a
+                                        href="{% url 'student_detail' student.id %}"
+                                        class="action-btn view"
+                                    >
+                                        View
+                                    </a>
+
+                                    <a
+                                        href="{% url 'student_edit' student.id %}"
+                                        class="action-btn edit"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <a
+                                        href="{% url 'student_delete' student.id %}"
+                                        class="action-btn delete"
+                                    >
+                                        Delete
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr id="emptyRow">
+                            <td colspan="7">
+                                <div class="empty">
+                                    <div class="empty-icon">👥</div>
+                                    <h3>No students found</h3>
+                                    <p>Add your first student to the library system.</p>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+    const searchInput = document.getElementById("studentSearch");
+    const rows = document.querySelectorAll(".student-row");
+    const displayedStudents = document.getElementById("displayedStudents");
+
+    searchInput.addEventListener("input", function () {
+
+        const searchValue = this.value.toLowerCase().trim();
+
+        let visibleCount = 0;
+
+        rows.forEach(function(row) {
+
+            const rowText = row.innerText.toLowerCase();
+
+            if (rowText.includes(searchValue)) {
+                row.style.display = "";
+                visibleCount++;
+            } else {
+                row.style.display = "none";
+            }
+
+        });
+
+        displayedStudents.textContent = visibleCount;
+
+    });
+</script>
+
+</body>
+</html>

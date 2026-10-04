@@ -1,0 +1,442 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .students-page {
+        padding: 25px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .page-title h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 700;
+    }
+
+    .page-title p {
+        margin: 6px 0 0;
+        color: #6b7280;
+    }
+
+    .btn-add {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 18px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-add:hover {
+        background: #1d4ed8;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .stat-value {
+        margin-top: 8px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .search-box {
+        background: white;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+    }
+
+    .search-form input {
+        flex: 1;
+        padding: 11px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .search-form button {
+        border: none;
+        background: #111827;
+        color: white;
+        padding: 11px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f9fafb;
+        color: #374151;
+        text-align: left;
+        padding: 14px 16px;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+    }
+
+    td {
+        padding: 15px 16px;
+        border-top: 1px solid #f0f0f0;
+        color: #374151;
+    }
+
+    tr:hover {
+        background: #f9fafb;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .roll-badge {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 5px 9px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        text-decoration: none;
+        padding: 7px 11px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .view-btn {
+        background: #eff6ff;
+        color: #1d4ed8;
+    }
+
+    .edit-btn {
+        background: #f0fdf4;
+        color: #15803d;
+    }
+
+    .delete-btn {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 20px;
+        color: #6b7280;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px;
+    }
+
+    .pagination a,
+    .pagination span {
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        border: 1px solid #e5e7eb;
+    }
+
+    .pagination a {
+        color: #2563eb;
+        background: white;
+    }
+
+    .pagination .current {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+    @media (max-width: 800px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .search-form {
+            flex-direction: column;
+        }
+
+        .students-page {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="students-page">
+
+    <div class="page-header">
+
+        <div class="page-title">
+            <h1>Students</h1>
+            <p>Manage library students and members</p>
+        </div>
+
+        <a href="{% url 'student_add' %}" class="btn-add">
+            + Add Student
+        </a>
+
+    </div>
+
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Total Students
+            </div>
+
+            <div class="stat-value">
+                {{ students.paginator.count|default:students|length }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Current Page
+            </div>
+
+            <div class="stat-value">
+                {{ students.number|default:"1" }}
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">
+                Records Shown
+            </div>
+
+            <div class="stat-value">
+                {{ students|length }}
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="search-box">
+
+        <form method="get" class="search-form">
+
+            <input
+                type="text"
+                name="q"
+                value="{{ request.GET.q|default:'' }}"
+                placeholder="Search by name, roll number, email or phone..."
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <div class="table-card">
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Roll No.</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for student in students %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+                        <td>
+                            <span class="student-name">
+                                {{ student.name }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="roll-badge">
+                                {{ student.roll_no }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ student.email }}
+                        </td>
+
+                        <td>
+                            {{ student.phone }}
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <a
+                                    href="{% url 'student_detail' student.id %}"
+                                    class="action-btn view-btn"
+                                >
+                                    View
+                                </a>
+
+                                <a
+                                    href="{% url 'student_edit' student.id %}"
+                                    class="action-btn edit-btn"
+                                >
+                                    Edit
+                                </a>
+
+                                <a
+                                    href="{% url 'student_delete' student.id %}"
+                                    class="action-btn delete-btn"
+                                >
+                                    Delete
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="6">
+
+                            <div class="empty-state">
+
+                                <h3>No Students Found</h3>
+
+                                <p>
+                                    No students are currently available.
+                                </p>
+
+                                <a
+                                    href="{% url 'student_add' %}"
+                                    class="btn-add"
+                                >
+                                    + Add First Student
+                                </a>
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% if students.has_other_pages %}
+
+        <div class="pagination">
+
+            {% if students.has_previous %}
+                <a href="?page={{ students.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Previous
+                </a>
+            {% endif %}
+
+
+            <span class="current">
+                Page {{ students.number }} of {{ students.paginator.num_pages }}
+            </span>
+
+
+            {% if students.has_next %}
+                <a href="?page={{ students.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    Next
+                </a>
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

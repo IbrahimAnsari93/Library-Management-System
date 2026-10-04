@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Issue Book - Library Management System</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+    }
+
+    .container {
+        width: 95%;
+        max-width: 600px;
+        margin: 40px auto;
+    }
+
+    .box {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px #0001;
+    }
+
+    h1 {
+        text-align: center;
+        color: #2563eb;
+        margin-bottom: 25px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: bold;
+    }
+
+    select,
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        font-size: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 13px;
+        border: none;
+        border-radius: 7px;
+        background: #16a34a;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #15803d;
+    }
+
+    .back {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        text-decoration: none;
+        color: #2563eb;
+    }
+
+    .message {
+        padding: 12px;
+        margin-bottom: 15px;
+        border-radius: 7px;
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+</style>
+
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="box">
+
+    <h1>
+        📕 Issue Book
+    </h1>
+
+
+   
+  
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+
+    
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+
+        <!-- STUDENT -->
+
+        <label>
+            👨‍🎓 Student
+        </label>
+
+        <select
+            name="student"
+            required
+        >
+
+            <option value="">
+                -- Select Student --
+            </option>
+
+
+            {% for student in students %}
+
+                <option
+                    value="{{ student.id }}"
+                    {% if selected_student|stringformat:"s" == student.id|stringformat:"s" %}
+                        selected
+                    {% endif %}
+                >
+
+                    {{ student.name }}
+                    -
+                    {{ student.roll_no }}
+
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <!-- BOOK -->
+
+        <label>
+            📚 Book
+        </label>
+
+        <select
+            name="book"
+            required
+        >
+
+            <option value="">
+                -- Select Available Book --
+            </option>
+
+
+            {% for book in books %}
+
+                <option value="{{ book.id }}">
+
+                    {{ book.title }}
+                    -
+                    {{ book.author }}
+                    (Available: {{ book.quantity }})
+
+                </option>
+
+            {% empty %}
+
+                <option value="">
+                    No books available
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <!-- DUE DATE -->
+
+        <label>
+            📅 Due Date
+        </label>
+
+        <input
+            type="date"
+            name="due_date"
+            value="{{ default_due_date|date:'Y-m-d' }}"
+            min="{{ today|date:'Y-m-d' }}"
+            required
+        >
+
+
+        <!-- SUBMIT -->
+
+        <button type="submit">
+            📕 Issue Book
+        </button>
+
+
+    </form>
+
+
+    <a
+        href="{% url 'issue_list' %}"
+        class="back"
+    >
+        ← Back to Issue List
+    </a>
+
+</div>
+
+
+</div>
+
+</body>
+
+</html>

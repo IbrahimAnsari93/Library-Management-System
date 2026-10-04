@@ -1,0 +1,585 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+    .report-wrapper {
+        padding: 24px;
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .report-title h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .report-title p {
+        margin: 5px 0 0;
+        color: #6c757d;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        border: 1px solid #eeeeee;
+    }
+
+    .summary-label {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .summary-value {
+        margin: 0;
+        font-size: 27px;
+        font-weight: 700;
+    }
+
+    .filter-card,
+    .table-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .search-input {
+        min-width: 320px;
+    }
+
+    .table-card h5 {
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .result-count {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 18px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eeeeee;
+        vertical-align: middle;
+    }
+
+    .student-name {
+        font-weight: 600;
+    }
+
+    .roll-number {
+        color: #6c757d;
+    }
+
+    .number-cell {
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .fine-cell {
+        font-weight: 600;
+    }
+
+    .overdue {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .active {
+        color: #0d6efd;
+        font-weight: 700;
+    }
+
+    .pending {
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .paid {
+        color: #198754;
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 20px;
+        color: #6c757d;
+    }
+
+    @media (max-width: 1100px) {
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .report-wrapper {
+            padding: 15px;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-input {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .report-table {
+            min-width: 1250px;
+        }
+
+    }
+
+</style>
+
+
+<div class="report-wrapper">
+
+
+    <!-- HEADER -->
+
+    <div class="report-header">
+
+        <div class="report-title">
+
+            <h2>
+                Student Report
+            </h2>
+
+            <p>
+                Student-wise library activity, issue and fine summary
+            </p>
+
+        </div>
+
+
+        <a
+            href="{% url 'reports' %}"
+            class="btn btn-secondary"
+        >
+            ← Back to Reports
+        </a>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Total Students
+            </div>
+
+            <p class="summary-value">
+                {{ total_students }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Books Issued
+            </div>
+
+            <p class="summary-value">
+                {{ total_issued }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Books Returned
+            </div>
+
+            <p class="summary-value">
+                {{ total_returned }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Currently Issued
+            </div>
+
+            <p class="summary-value">
+                {{ total_active }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SECONDARY SUMMARY -->
+
+    <div class="summary-grid">
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Overdue Books
+            </div>
+
+            <p class="summary-value overdue">
+                {{ total_overdue }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Total Fine
+            </div>
+
+            <p class="summary-value">
+                ₹{{ total_fine }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Fine Paid
+            </div>
+
+            <p class="summary-value paid">
+                ₹{{ total_paid }}
+            </p>
+
+        </div>
+
+
+        <div class="summary-card">
+
+            <div class="summary-label">
+                Outstanding Fine
+            </div>
+
+            <p class="summary-value pending">
+                ₹{{ total_pending }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="filter-card">
+
+        <form
+            method="get"
+            class="filter-form"
+        >
+
+            <div class="filter-group">
+
+                <label for="q">
+                    Search Student
+                </label>
+
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    value="{{ search }}"
+                    class="form-control search-input"
+                    placeholder="Name, roll number, email or phone"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Search
+            </button>
+
+
+            {% if search %}
+
+            <a
+                href="{% url 'student_report' %}"
+                class="btn btn-outline-secondary"
+            >
+                Clear
+            </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <!-- STUDENT REPORT TABLE -->
+
+    <div class="table-card">
+
+        <h5>
+            Student Activity Report
+        </h5>
+
+        <div class="result-count">
+
+            {% if student_reports %}
+
+                {{ student_reports|length }}
+                student record(s) found
+
+            {% else %}
+
+                No student records found
+
+            {% endif %}
+
+        </div>
+
+
+        {% if student_reports %}
+
+
+        <div class="table-responsive">
+
+            <table class="report-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Student</th>
+
+                        <th>Roll No.</th>
+
+                        <th>Total Issued</th>
+
+                        <th>Returned</th>
+
+                        <th>Active</th>
+
+                        <th>Overdue</th>
+
+                        <th>Total Fine</th>
+
+                        <th>Paid Fine</th>
+
+                        <th>Outstanding</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    {% for item in student_reports %}
+
+                    <tr>
+
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+
+                            <div class="student-name">
+                                {{ item.student.name }}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <span class="roll-number">
+                                {{ item.student.roll_no }}
+                            </span>
+
+                        </td>
+
+
+                        <td class="number-cell">
+                            {{ item.total_issued }}
+                        </td>
+
+
+                        <td class="number-cell">
+                            {{ item.total_returned }}
+                        </td>
+
+
+                        <td class="number-cell active">
+                            {{ item.active_issues }}
+                        </td>
+
+
+                        <td class="number-cell">
+
+                            {% if item.overdue_issues > 0 %}
+
+                                <span class="overdue">
+                                    {{ item.overdue_issues }}
+                                </span>
+
+                            {% else %}
+
+                                0
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="fine-cell">
+                            ₹{{ item.total_fine }}
+                        </td>
+
+
+                        <td class="fine-cell paid">
+                            ₹{{ item.total_paid }}
+                        </td>
+
+
+                        <td class="fine-cell">
+
+                            {% if item.total_pending > 0 %}
+
+                                <span class="pending">
+                                    ₹{{ item.total_pending }}
+                                </span>
+
+                            {% else %}
+
+                                ₹0
+
+                            {% endif %}
+
+                        </td>
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-state">
+
+            <h5>
+                No Student Records Found
+            </h5>
+
+            <p>
+                Try another student name or roll number.
+            </p>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+{% endblock %}

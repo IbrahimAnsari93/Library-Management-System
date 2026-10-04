@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Return Book | Library Management</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .page {
+            max-width: 650px;
+            margin: auto;
+            padding: 60px 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5eaf0;
+            border-radius: 18px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #dbeafe;
+            color: #2563eb;
+            font-size: 30px;
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .book-info {
+            background: #f8fafc;
+            border: 1px solid #e5eaf0;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid #edf1f5;
+            font-size: 14px;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #64748b;
+        }
+
+        .value {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        button,
+        a {
+            flex: 1;
+            padding: 13px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cancel {
+            background: #f8fafc;
+            color: #374151;
+            border: 1px solid #dbe2ea;
+        }
+
+        .confirm {
+            background: #2563eb;
+            color: white;
+        }
+
+        button:hover,
+        a:hover {
+            opacity: .9;
+        }
+
+        @media (max-width: 550px) {
+
+            .page {
+                padding: 30px 12px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="card">
+
+        <div class="icon">
+            <i class="fa-solid fa-arrow-rotate-left"></i>
+        </div>
+
+        <h1>Return Book?</h1>
+
+        <p class="subtitle">
+            Please confirm that this book is being returned.
+            The system will automatically calculate any applicable
+            late fine.
+        </p>
+
+
+        <div class="book-info">
+
+            <div class="row">
+
+                <span class="label">
+                    Book
+                </span>
+
+                <span class="value">
+                    {{ issue.book.title }}
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Student
+                </span>
+
+                <span class="value">
+                    {{ issue.student.name }}
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Issue Date
+                </span>
+
+                <span class="value">
+                    {{ issue.issue_date|date:"d M Y" }}
+                </span>
+
+            </div>
+
+
+            <div class="row">
+
+                <span class="label">
+                    Due Date
+                </span>
+
+                <span class="value">
+                    {{ issue.due_date|date:"d M Y" }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="warning">
+
+            <i class="fa-solid fa-triangle-exclamation"></i>
+
+            Fine policy:
+            <strong>₹10 per late day</strong>.
+
+            The final fine will be calculated automatically
+            according to the actual return date.
+
+        </div>
+
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="actions">
+
+                <a
+                    href="{% url 'issue_list' %}"
+                    class="cancel"
+                >
+                    <i class="fa-solid fa-xmark"></i>
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="confirm"
+                >
+                    <i class="fa-solid fa-check"></i>
+                    Confirm Return
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

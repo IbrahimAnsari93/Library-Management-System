@@ -1,0 +1,421 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .report-wrapper {
+        padding: 24px;
+    }
+
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .report-title h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .report-title p {
+        margin: 5px 0 0;
+        color: #6c757d;
+    }
+
+    .filter-card,
+    .table-card {
+        background: #ffffff;
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        flex: 1;
+        max-width: 420px;
+    }
+
+    .filter-group label {
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .filter-group input {
+        width: 100%;
+    }
+
+    .table-card h5 {
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .result-count {
+        color: #6c757d;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eeeeee;
+        vertical-align: middle;
+    }
+
+    .return-badge {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 20px;
+        background: #d1e7dd;
+        color: #0f5132;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .late-badge {
+        display: inline-block;
+        padding: 5px 11px;
+        border-radius: 20px;
+        background: #f8d7da;
+        color: #842029;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .fine-paid {
+        color: #198754;
+        font-weight: 600;
+    }
+
+    .fine-zero {
+        color: #6c757d;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 45px 20px;
+        color: #6c757d;
+    }
+
+    @media (max-width: 700px) {
+
+        .report-wrapper {
+            padding: 15px;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            max-width: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .report-table {
+            min-width: 900px;
+        }
+    }
+</style>
+
+
+<div class="report-wrapper">
+
+    <!-- HEADER -->
+    <div class="report-header">
+
+        <div class="report-title">
+
+            <h2>
+                Return Report
+            </h2>
+
+            <p>
+                Complete returned book records and return history
+            </p>
+
+        </div>
+
+        <a
+            href="{% url 'reports' %}"
+            class="btn btn-secondary"
+        >
+            ← Back to Reports
+        </a>
+
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="filter-card">
+
+        <form
+            method="get"
+            class="filter-form"
+        >
+
+            <div class="filter-group">
+
+                <label for="q">
+                    Search Returned Books
+                </label>
+
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    value="{{ search }}"
+                    class="form-control"
+                    placeholder="Student, roll no., book or ISBN"
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                Search
+            </button>
+
+
+            {% if search %}
+
+            <a
+                href="{% url 'return_report' %}"
+                class="btn btn-outline-secondary"
+            >
+                Clear
+            </a>
+
+            {% endif %}
+
+        </form>
+
+    </div>
+
+
+    <!-- RETURN TABLE -->
+    <div class="table-card">
+
+        <h5>
+            Returned Book Records
+        </h5>
+
+
+        <div class="result-count">
+
+            {% if issues %}
+                {{ issues|length }} returned record(s) found
+            {% else %}
+                No returned records found
+            {% endif %}
+
+        </div>
+
+
+        {% if issues %}
+
+        <div class="table-responsive">
+
+            <table class="report-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>#</th>
+
+                        <th>Student</th>
+
+                        <th>Roll No.</th>
+
+                        <th>Book</th>
+
+                        <th>ISBN</th>
+
+                        <th>Issue Date</th>
+
+                        <th>Due Date</th>
+
+                        <th>Return Date</th>
+
+                        <th>Late Days</th>
+
+                        <th>Status</th>
+
+                        <th>Fine</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for issue in issues %}
+
+                    <tr>
+
+                        <td>
+                            {{ forloop.counter }}
+                        </td>
+
+
+                        <td>
+                            <strong>
+                                {{ issue.student.name }}
+                            </strong>
+                        </td>
+
+
+                        <td>
+                            {{ issue.student.roll_no }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.book.title }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.book.isbn }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.issue_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+                            {{ issue.due_date|date:"d M Y" }}
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.return_date %}
+
+                                {{ issue.return_date|date:"d M Y" }}
+
+                            {% else %}
+
+                                —
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.late_days > 0 %}
+
+                                <span class="late-badge">
+                                    {{ issue.late_days }} day(s)
+                                </span>
+
+                            {% else %}
+
+                                0
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.returned %}
+
+                                <span class="return-badge">
+                                    Returned
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if issue.fine > 0 %}
+
+                                <span class="fine-paid">
+                                    ₹{{ issue.fine }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="fine-zero">
+                                    ₹0
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty-state">
+
+            <h5>
+                No Returned Books Found
+            </h5>
+
+            <p>
+                There are no returned books matching your search.
+            </p>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

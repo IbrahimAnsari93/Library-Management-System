@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Student</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 80px auto;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+
+        p {
+            color: #555;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+
+        .student-name {
+            font-weight: bold;
+            color: #222;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 7px;
+            margin: 25px 0;
+            font-size: 15px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        button,
+        .cancel-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #bb2d3b;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #565e64;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                margin: 40px auto;
+            }
+
+            .card {
+                padding: 25px 20px;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            button,
+            .cancel-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="icon">
+            🗑️
+        </div>
+
+        <h1>Delete Student</h1>
+
+        <p>
+            Are you sure you want to delete
+            <span class="student-name">
+                "{{ student.name }}"
+            </span>?
+        </p>
+
+        <div class="warning">
+            ⚠️ Warning: This action cannot be undone.
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="buttons">
+
+                <button
+                    type="submit"
+                    class="delete-btn"
+                    onclick="return confirm('Are you sure you want to delete this student?');">
+                    🗑️ Yes, Delete
+                </button>
+
+                <a
+                    href="{% url 'student_list' %}"
+                    class="cancel-btn">
+                    ❌ Cancel
+                </a>
+
+            </div>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

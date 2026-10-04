@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Books - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px #0001;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .add-btn {
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .add-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .search-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            min-width: 180px;
+            background: white;
+            font-size: 15px;
+        }
+
+        .search-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            background: #16a34a;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-btn:hover {
+            background: #15803d;
+        }
+
+        .reset-btn {
+            padding: 12px 20px;
+            border-radius: 7px;
+            background: #64748b;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .reset-btn:hover {
+            background: #475569;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        th {
+            background: #2563eb;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .available {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .unavailable {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .edit-btn {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .delete-btn {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+
+        .result-info {
+            margin-bottom: 15px;
+            color: #475569;
+        }
+
+        .pagination {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 9px 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .pagination a {
+            color: #2563eb;
+            background: white;
+        }
+
+        .pagination a:hover {
+            background: #eff6ff;
+        }
+
+        .current {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb !important;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .search-row {
+                flex-direction: column;
+            }
+
+            .search-input,
+            .filter-select,
+            .search-btn,
+            .reset-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="top">
+
+        <h1>📚 Books</h1>
+
+        <a href="{% url 'add_book' %}" class="add-btn">
+            ➕ Add Book
+        </a>
+
+    </div>
+
+    {% if messages %}
+
+        {% for message in messages %}
+
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+    <div class="search-box">
+
+        <form method="GET">
+
+            <div class="search-row">
+
+                <input
+                    type="text"
+                    name="search"
+                    class="search-input"
+                    placeholder="🔍 Search title, author, ISBN or category..."
+                    value="{{ search }}"
+                >
+
+                <select name="category" class="filter-select">
+
+                    <option value="">
+                        📚 All Categories
+                    </option>
+
+                    {% for cat in categories %}
+
+                        <option
+                            value="{{ cat }}"
+                            {% if category == cat %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ cat }}
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+                <select name="availability" class="filter-select">
+
+                    <option value="">
+                        📦 All Books
+                    </option>
+
+                    <option
+                        value="available"
+                        {% if availability == "available" %}
+                            selected
+                        {% endif %}
+                    >
+                        ✅ Available
+                    </option>
+
+                    <option
+                        value="unavailable"
+                        {% if availability == "unavailable" %}
+                            selected
+                        {% endif %}
+                    >
+                        ❌ Unavailable
+                    </option>
+
+                </select>
+
+                <button
+                    type="submit"
+                    class="search-btn"
+                >
+                    🔍 Search
+                </button>
+
+                <a
+                    href="{% url 'book_list' %}"
+                    class="reset-btn"
+                >
+                    🔄 Reset
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="result-info">
+
+        {% if search or category or availability %}
+
+            🔎 Search results:
+            <strong>
+                {{ page_obj.paginator.count }}
+            </strong>
+            book(s) found.
+
+        {% else %}
+
+            📚 Total:
+            <strong>
+                {{ page_obj.paginator.count }}
+            </strong>
+            book(s).
+
+        {% endif %}
+
+    </div>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Category</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for book in books %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ book.title }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ book.author }}
+                        </td>
+
+                        <td>
+                            {{ book.isbn }}
+                        </td>
+
+                        <td>
+                            {{ book.category }}
+                        </td>
+
+                        <td>
+
+                            {% if book.quantity > 0 %}
+
+                                <span class="available">
+                                    ✅ {{ book.quantity }}
+                                </span>
+
+                            {% else %}
+
+                                <span class="unavailable">
+                                    ❌ 0
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <a
+                                href="{% url 'edit_book' book.id %}"
+                                class="edit-btn"
+                            >
+                                ✏️ Edit
+                            </a>
+
+                            &nbsp; | &nbsp;
+
+                            <a
+                                href="{% url 'delete_book' book.id %}"
+                                class="delete-btn"
+                                onclick="return confirm('Are you sure you want to delete this book?');"
+                            >
+                                🗑️ Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            style="text-align: center; padding: 30px;"
+                        >
+
+                            📭
+                            <strong>
+                                No books found.
+                            </strong>
+
+                            <br>
+                            <br>
+
+                            Try another search or filter.
+
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% if page_obj.has_other_pages %}
+
+        <div class="pagination">
+
+            {% if page_obj.has_previous %}
+
+                <a
+                    href="?page=1&search={{ search }}&category={{ category }}&availability={{ availability }}"
+                >
+                    ⏮ First
+                </a>
+
+                <a
+                    href="?page={{ page_obj.previous_page_number }}&search={{ search }}&category={{ category }}&availability={{ availability }}"
+                >
+                    ◀ Previous
+                </a>
+
+            {% endif %}
+
+            <span class="current">
+
+                Page
+                {{ page_obj.number }}
+                of
+                {{ page_obj.paginator.num_pages }}
+
+            </span>
+
+            {% if page_obj.has_next %}
+
+                <a
+                    href="?page={{ page_obj.next_page_number }}&search={{ search }}&category={{ category }}&availability={{ availability }}"
+                >
+                    Next ▶
+                </a>
+
+                <a
+                    href="?page={{ page_obj.paginator.num_pages }}&search={{ search }}&category={{ category }}&availability={{ availability }}"
+                >
+                    Last ⏭
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    {% endif %}
+
+    <a
+        href="{% url 'dashboard' %}"
+        class="back"
+    >
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+
+</html>

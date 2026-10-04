@@ -1,0 +1,832 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ book.title }} | Library Management</title>
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #172033;
+        }
+
+        .page {
+            max-width: 1250px;
+            margin: auto;
+            padding: 30px 20px 50px;
+        }
+
+        /* HEADER */
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            margin-bottom: 7px;
+        }
+
+        .heading p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 1px solid #dbe2ea;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .9;
+        }
+
+        /* BOOK MAIN CARD */
+
+        .book-card {
+            background: white;
+            border-radius: 18px;
+            border: 1px solid #e5eaf0;
+            padding: 28px;
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .cover-wrapper {
+            width: 230px;
+            height: 310px;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #eef2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cover-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .placeholder {
+            text-align: center;
+            color: #9ca3af;
+            padding: 20px;
+        }
+
+        .placeholder i {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .book-info h2 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .author {
+            color: #64748b;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .status.in-stock {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.low-stock {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status.out-stock {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .detail-box {
+            background: #f8fafc;
+            border: 1px solid #e7edf4;
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .detail-box span {
+            display: block;
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .detail-box strong {
+            font-size: 14px;
+            color: #172033;
+            word-break: break-word;
+        }
+
+        /* DESCRIPTION */
+
+        .section {
+            background: white;
+            border: 1px solid #e5eaf0;
+            border-radius: 18px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+        }
+
+        .description {
+            color: #5b6575;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        /* INVENTORY */
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .inventory-card {
+            border-radius: 14px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #e5eaf0;
+        }
+
+        .inventory-card i {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .inventory-card h4 {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        .inventory-card p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ISSUE HISTORY */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 13px;
+            text-align: left;
+        }
+
+        td {
+            padding: 15px 13px;
+            border-top: 1px solid #edf1f5;
+            font-size: 14px;
+        }
+
+        .student {
+            font-weight: 600;
+        }
+
+        .student small {
+            display: block;
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-issued {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-returned {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-late {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #94a3b8;
+        }
+
+        .empty i {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+
+            .book-card {
+                grid-template-columns: 180px 1fr;
+            }
+
+            .cover-wrapper {
+                width: 180px;
+                height: 250px;
+            }
+
+            .details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .inventory-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .page {
+                padding: 20px 12px 40px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .book-card {
+                grid-template-columns: 1fr;
+            }
+
+            .cover-wrapper {
+                width: 100%;
+                max-width: 240px;
+                height: 300px;
+                margin: auto;
+            }
+
+            .book-info h2 {
+                font-size: 24px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                width: 100%;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <!-- HEADER -->
+
+    <div class="topbar">
+
+        <div class="heading">
+            <h1>Book Details</h1>
+            <p>Complete information and issue history</p>
+        </div>
+
+        <div class="actions">
+
+            <a href="{% url 'book_list' %}" class="btn btn-secondary">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Books
+            </a>
+
+            {% if user.is_staff %}
+                <a
+                    href="{% url 'edit_book' book.id %}"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Book
+                </a>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- BOOK INFORMATION -->
+
+    <div class="book-card">
+
+        <div class="cover-wrapper">
+
+            {% if book.cover_image %}
+
+                <img
+                    src="{{ book.cover_image.url }}"
+                    alt="{{ book.title }}"
+                >
+
+            {% else %}
+
+                <div class="placeholder">
+                    <i class="fa-solid fa-book"></i>
+                    <p>No Cover Image</p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="book-info">
+
+            <h2>{{ book.title }}</h2>
+
+            <p class="author">
+                <i class="fa-solid fa-user-pen"></i>
+                {{ book.author }}
+            </p>
+
+
+            {% if book.inventory_status == "In Stock" %}
+
+                <div class="status in-stock">
+                    <i class="fa-solid fa-circle-check"></i>
+                    In Stock
+                </div>
+
+            {% elif book.inventory_status == "Low Stock" %}
+
+                <div class="status low-stock">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Low Stock
+                </div>
+
+            {% else %}
+
+                <div class="status out-stock">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    Out of Stock
+                </div>
+
+            {% endif %}
+
+
+            <div class="details-grid">
+
+                <div class="detail-box">
+                    <span>ISBN</span>
+                    <strong>{{ book.isbn }}</strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Category</span>
+                    <strong>{{ book.category }}</strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Publisher</span>
+                    <strong>
+                        {% if book.publisher %}
+                            {{ book.publisher }}
+                        {% else %}
+                            Not Available
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Publication Year</span>
+                    <strong>
+                        {% if book.publication_year %}
+                            {{ book.publication_year }}
+                        {% else %}
+                            Not Available
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Language</span>
+                    <strong>{{ book.language }}</strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Edition</span>
+                    <strong>
+                        {% if book.edition %}
+                            {{ book.edition }}
+                        {% else %}
+                            Not Available
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Shelf Number</span>
+                    <strong>
+                        {% if book.shelf_number %}
+                            {{ book.shelf_number }}
+                        {% else %}
+                            Not Assigned
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Rack Number</span>
+                    <strong>
+                        {% if book.rack_number %}
+                            {{ book.rack_number }}
+                        {% else %}
+                            Not Assigned
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-box">
+                    <span>Total Copies</span>
+                    <strong>{{ book.quantity }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INVENTORY -->
+
+    <div class="section">
+
+        <div class="section-header">
+            <h3>
+                <i class="fa-solid fa-boxes-stacked"></i>
+                Inventory Overview
+            </h3>
+        </div>
+
+        <div class="inventory-grid">
+
+            <div class="inventory-card">
+                <i class="fa-solid fa-layer-group"></i>
+                <h4>{{ book.quantity }}</h4>
+                <p>Total Copies</p>
+            </div>
+
+            <div class="inventory-card">
+                <i class="fa-solid fa-book-open"></i>
+                <h4>{{ book.available_quantity }}</h4>
+                <p>Available Copies</p>
+            </div>
+
+            <div class="inventory-card">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <h4>{{ book.issued_quantity }}</h4>
+                <p>Currently Issued</p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DESCRIPTION -->
+
+    <div class="section">
+
+        <div class="section-header">
+            <h3>
+                <i class="fa-solid fa-align-left"></i>
+                Description
+            </h3>
+        </div>
+
+        <div class="description">
+
+            {% if book.description %}
+
+                {{ book.description|linebreaks }}
+
+            {% else %}
+
+                No description has been added for this book.
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- ISSUE HISTORY -->
+
+    <div class="section">
+
+        <div class="section-header">
+
+            <h3>
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Issue History
+            </h3>
+
+            <span class="badge badge-issued">
+                {{ issues|length }} Records
+            </span>
+
+        </div>
+
+
+        {% if issues %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>Student</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Return Date</th>
+                            <th>Status</th>
+                            <th>Fine</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for issue in issues %}
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="student">
+
+                                        {{ issue.student.name }}
+
+                                        <small>
+                                            Roll No: {{ issue.student.roll_no }}
+                                        </small>
+
+                                    </div>
+
+                                </td>
+
+                                <td>
+                                    {{ issue.issue_date|date:"d M Y" }}
+                                </td>
+
+                                <td>
+                                    {{ issue.due_date|date:"d M Y" }}
+                                </td>
+
+                                <td>
+
+                                    {% if issue.return_date %}
+
+                                        {{ issue.return_date|date:"d M Y" }}
+
+                                    {% else %}
+
+                                        —
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if issue.returned %}
+
+                                        <span class="badge badge-returned">
+                                            <i class="fa-solid fa-check"></i>
+                                            Returned
+                                        </span>
+
+                                    {% elif issue.late_days > 0 %}
+
+                                        <span class="badge badge-late">
+                                            <i class="fa-solid fa-clock"></i>
+                                            Late
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge badge-issued">
+                                            <i class="fa-solid fa-book-open"></i>
+                                            Issued
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if issue.current_fine > 0 %}
+
+                                        ₹{{ issue.current_fine }}
+
+                                    {% else %}
+
+                                        ₹0
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty">
+
+                <i class="fa-solid fa-folder-open"></i>
+
+                <p>
+                    No issue history available for this book.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- STAFF ACTION -->
+
+    {% if user.is_staff %}
+
+        <div class="section">
+
+            <div class="section-header">
+
+                <h3>
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Administrative Actions
+                </h3>
+
+            </div>
+
+            <div class="actions">
+
+                <a
+                    href="{% url 'edit_book' book.id %}"
+                    class="btn btn-primary"
+                >
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Book
+                </a>
+
+                <a
+                    href="{% url 'issue_book' %}"
+                    class="btn btn-secondary"
+                >
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Issue a Book
+                </a>
+
+                <a
+                    href="{% url 'book_list' %}"
+                    class="btn btn-secondary"
+                >
+                    <i class="fa-solid fa-books"></i>
+                    All Books
+                </a>
+
+            </div>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

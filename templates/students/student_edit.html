@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Student - Library Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.10);
+        }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+            color: #222;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button,
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-save {
+            background: #007bff;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-save:hover {
+            background: #0056b3;
+        }
+
+        .btn-cancel {
+            background: #6c757d;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-cancel:hover {
+            background: #545b62;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            background: #f8d7da;
+            color: #721c24;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            padding: 12px;
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>✏️ Edit Student</h1>
+
+        <p class="subtitle">
+            Update student information
+        </p>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="info">
+            <strong>Note:</strong>
+            Student login username is the email address.
+            Student password is the roll number.
+        </div>
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="name">Student Name</label>
+
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value="{{ student.name }}"
+                    placeholder="Enter student name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="roll_no">Roll Number</label>
+
+                <input
+                    type="text"
+                    id="roll_no"
+                    name="roll_no"
+                    value="{{ student.roll_no }}"
+                    placeholder="Enter roll number"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ student.email }}"
+                    placeholder="Enter email address"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+
+                <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    value="{{ student.phone }}"
+                    placeholder="Enter phone number"
+                    required
+                >
+            </div>
+
+            <div class="buttons">
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                >
+                    💾 Update Student
+                </button>
+
+                <a
+                    href="{% url 'student_list' %}"
+                    class="btn btn-cancel"
+                >
+                    ❌ Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
