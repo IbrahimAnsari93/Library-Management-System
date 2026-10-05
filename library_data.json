@@ -1,0 +1,219 @@
+[
+{
+  "model": "library.student",
+  "pk": 13,
+  "fields": {
+    "name": "Mohit Tiwari",
+    "roll_no": "530042",
+    "email": "mohit@gmail.com",
+    "phone": "2858754427"
+  }
+},
+{
+  "model": "library.student",
+  "pk": 14,
+  "fields": {
+    "name": "Rahul Kumar",
+    "roll_no": "530067",
+    "email": "rahul@gmail.com",
+    "phone": "6267986121"
+  }
+},
+{
+  "model": "library.student",
+  "pk": 15,
+  "fields": {
+    "name": "ijg",
+    "roll_no": "5300321",
+    "email": "adsdjgd@gmail.com",
+    "phone": "9875365421"
+  }
+},
+{
+  "model": "library.book",
+  "pk": 2,
+  "fields": {
+    "title": "chemistry",
+    "author": "Irshad Ansari",
+    "isbn": "683943akd",
+    "category": "chemistry",
+    "publisher": "",
+    "publication_year": null,
+    "language": "English",
+    "edition": "",
+    "description": "",
+    "shelf_number": "rrsuf",
+    "rack_number": "",
+    "quantity": 90,
+    "cover_image": "",
+    "created_at": "2026-09-18T19:15:11.738Z",
+    "updated_at": "2026-10-03T20:09:54.261Z"
+  }
+},
+{
+  "model": "library.book",
+  "pk": 5,
+  "fields": {
+    "title": "dhassg",
+    "author": "xijszfidnc",
+    "isbn": "cjisfis428cj",
+    "category": "physics",
+    "publisher": "",
+    "publication_year": null,
+    "language": "English",
+    "edition": "",
+    "description": "",
+    "shelf_number": "",
+    "rack_number": "",
+    "quantity": 19,
+    "cover_image": "",
+    "created_at": "2026-09-18T19:15:11.738Z",
+    "updated_at": "2026-09-18T19:15:11.772Z"
+  }
+},
+{
+  "model": "library.book",
+  "pk": 6,
+  "fields": {
+    "title": "feudfugj",
+    "author": "Danish",
+    "isbn": "fgjdw45fxfge",
+    "category": "math",
+    "publisher": "Danish zu",
+    "publication_year": 2024,
+    "language": "English",
+    "edition": "prakshan",
+    "description": "",
+    "shelf_number": "fusdbjf555",
+    "rack_number": "fstejv",
+    "quantity": 23,
+    "cover_image": "books/Ibrahim_photo.jpeg",
+    "created_at": "2026-09-18T19:24:33.511Z",
+    "updated_at": "2026-09-18T19:41:43.282Z"
+  }
+},
+{
+  "model": "library.book",
+  "pk": 7,
+  "fields": {
+    "title": "dsdgdh",
+    "author": "dfsugidbjfdgfh",
+    "isbn": "gd545wet",
+    "category": "biology",
+    "publisher": "sdufdugncv",
+    "publication_year": 2021,
+    "language": "English",
+    "edition": "dfhgvcg8r98y",
+    "description": "",
+    "shelf_number": "zfud8gur",
+    "rack_number": "uyzdfdg",
+    "quantity": 1,
+    "cover_image": "",
+    "created_at": "2026-09-21T19:04:23.344Z",
+    "updated_at": "2026-09-21T19:04:23.344Z"
+  }
+},
+{
+  "model": "library.issue",
+  "pk": 21,
+  "fields": {
+    "student": 13,
+    "book": 2,
+    "issue_date": "2026-09-18",
+    "due_date": "2026-09-18",
+    "return_date": "2026-09-18",
+    "returned": true,
+    "fine": 0
+  }
+},
+{
+  "model": "library.issue",
+  "pk": 23,
+  "fields": {
+    "student": 13,
+    "book": 6,
+    "issue_date": "2026-09-19",
+    "due_date": "2026-09-19",
+    "return_date": "2026-09-19",
+    "returned": true,
+    "fine": 0
+  }
+},
+{
+  "model": "library.issue",
+  "pk": 24,
+  "fields": {
+    "student": 13,
+    "book": 2,
+    "issue_date": "2026-09-19",
+    "due_date": "2026-10-03",
+    "return_date": "2026-10-04",
+    "returned": true,
+    "fine": 10
+  }
+},
+{
+  "model": "library.issue",
+  "pk": 26,
+  "fields": {
+    "student": 13,
+    "book": 6,
+    "issue_date": "2026-10-03",
+    "due_date": "2026-10-03",
+    "return_date": null,
+    "returned": false,
+    "fine": 0
+  }
+},
+{
+  "model": "library.issue",
+  "pk": 27,
+  "fields": {
+    "student": 14,
+    "book": 6,
+    "issue_date": "2026-10-04",
+    "due_date": "2026-10-04",
+    "return_date": "2026-10-04",
+    "returned": true,
+    "fine": 0
+  }
+},
+{
+  "model": "library.finepayment",
+  "pk": 2,
+  "fields": {
+    "issue": 24,
+    "fine_amount": 30,
+    "paid_amount": 30,
+    "payment_status": "Paid",
+    "payment_method": "UPI",
+    "payment_date": "2026-09-22",
+    "transaction_id": "275102511081",
+    "notes": "",
+    "created_at": "2026-09-21T19:15:50.199Z",
+    "updated_at": "2026-09-21T19:15:59.408Z"
+  }
+},
+{
+  "model": "library.notification",
+  "pk": 6,
+  "fields": {
+    "title": "Low Stock: dsdgdh",
+    "message": "'dsdgdh' has only 1 copy/copies available.",
+    "notification_type": "low_stock",
+    "is_read": true,
+    "created_at": "2026-10-01T17:33:11.571Z"
+  }
+},
+{
+  "model": "library.notification",
+  "pk": 10,
+  "fields": {
+    "title": "Overdue Book: feudfugj",
+    "message": "Mohit Tiwari has not returned 'feudfugj'. The book is 2 day(s) overdue.",
+    "notification_type": "overdue",
+    "is_read": false,
+    "created_at": "2026-10-03T19:01:22.851Z"
+  }
+}
+]
