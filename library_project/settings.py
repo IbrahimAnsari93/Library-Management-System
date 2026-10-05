@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv(BASE_DIR / ".env")
 
 # ============================================================
 # BASE DIRECTORY
@@ -73,7 +76,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # Library application
     "library.apps.LibraryConfig",
+
+    # Cloudinary
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 
@@ -124,7 +132,6 @@ TEMPLATES = [
 
         "OPTIONS": {
             "context_processors": [
-
                 "django.template.context_processors.request",
 
                 "django.contrib.auth.context_processors.auth",
@@ -152,7 +159,6 @@ WSGI_APPLICATION = "library_project.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
@@ -207,16 +213,36 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+CLOUDINARY_CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET")
 
-# ============================================================
-# WHITENOISE STATIC FILE STORAGE
-# ============================================================
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": CLOUDINARY_CLOUD_NAME,
+    "API_KEY": CLOUDINARY_API_KEY,
+    "API_SECRET": CLOUDINARY_API_SECRET,
+}
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+# ============================================================
+# STORAGE
+# ============================================================
+
+STORAGES = {
+    # User uploaded media files
+    # Book cover images will be stored in Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
 
+    # CSS / JavaScript / static files
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
